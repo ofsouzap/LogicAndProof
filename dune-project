@@ -9,6 +9,9 @@
 
 (authors "Ofsouzap")
 
+(maintainers "Ofsouzap")
+
 (package
  (name LogicAndProof)
- (depends ocaml dune))
+ (synopsis "Logic stuff")
+ (depends ocaml dune alcotest))
