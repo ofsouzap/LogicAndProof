@@ -84,18 +84,4 @@ let rec simple_au_nnf (p : proposition_simple) : proposition_nnf = match p with
   | Pas (Atome a) -> Atome (PasAtome a)
   | Pas (Pas x) -> simple_au_nnf x
 
-(** TODO - faiez le truc pour transformer les proposition en CNF et en DNF *)
-
-(* t+f -> f *)
-(* ¬(t+f) + f *)
-(*
-Ou (
-  (Pas
-    (Ou
-      (P),
-      (Q)
-    )
-  ),
-  (P)
-)
-*)
+(** TODO - faisez le truc pour transformer les proposition en CNF et en DNF *)
