@@ -21,10 +21,30 @@ let rec string_pas_vide_element_formateur ppf = function
 
 (* Les "testable"s personnalise pour les pas-vides *)
 
+let rec comparez_lists_set (xs : 'a list) (ys : 'a list) : bool =
+  let rec essaiez_enlever (x : 'a) (acc : 'a list) = function
+    | [] -> None
+    | h::ts ->
+      if h = x
+      then Some (acc @ ts)
+      else essaiez_enlever x (acc @ [h]) ts
+  in
+  match (xs, ys) with
+    | [], [] -> true
+    | [], _ -> false
+    | _, [] -> false
+    | (xh::xts), ys -> ( match essaiez_enlever xh [] ys with
+      | None -> false
+      | Some ys' -> comparez_lists_set xts ys' )
+
+let comparez_pas_vide_set (xs : 'a pas_vide) (ys : 'a pas_vide) : bool =
+  comparez_lists_set (list_of_pas_vide xs) (list_of_pas_vide ys)
+
 let int_pas_vide : (int pas_vide) Alcotest.testable = Alcotest.testable int_pas_vide_element_formateur ( = )
 let int_pas_vide_opt : (int pas_vide option) Alcotest.testable = Alcotest.testable int_pas_vide_opt_element_formateur ( = )
 let int_paire_pas_vide : ((int * int) pas_vide) Alcotest.testable = Alcotest.testable int_paire_pas_vide_element_formateur ( = )
 let string_pas_vide : (string pas_vide) Alcotest.testable = Alcotest.testable string_pas_vide_element_formateur ( = )
+let int_paire_pas_vide_set : ((int * int) pas_vide) Alcotest.testable = Alcotest.testable int_paire_pas_vide_element_formateur comparez_pas_vide_set
 
 (* Testes Singleton *)
 
@@ -213,6 +233,35 @@ let suite_quelque =
   ; "Int4", `Quick, test_quelque true  (fun x -> x mod 2 = 0)    (Cons (6, Cons (2, Feui 6)))
   ]
 
+(* Testes Produit Cartesian *)
+
+let test_prod_cartesian exp xs ys () =
+  let res = prod_cartesian xs ys in
+  Alcotest.check int_paire_pas_vide_set "" exp res
+
+let suite_prod_cartesian =
+  [ "0", `Quick, test_prod_cartesian
+      (pas_vide_of_list [ 1,-1; 1,-2; 2,-1; 2,-2 ])
+      (pas_vide_of_list [ 1; 2 ])
+      (pas_vide_of_list [ -1; -2 ])
+  ; "1", `Quick, test_prod_cartesian
+      (pas_vide_of_list [ 1,-1; 1,-2 ])
+      (pas_vide_of_list [ 1 ])
+      (pas_vide_of_list [ -1; -2 ])
+  ; "2", `Quick, test_prod_cartesian
+      (pas_vide_of_list [ 1,-1; 2,-1 ])
+      (pas_vide_of_list [ 1; 2 ])
+      (pas_vide_of_list [ -1 ])
+  ; "3", `Quick, test_prod_cartesian
+      (pas_vide_of_list [ 1,-1 ])
+      (pas_vide_of_list [ 1 ])
+      (pas_vide_of_list [ -1 ])
+  ; "4", `Quick, test_prod_cartesian
+      (pas_vide_of_list [ 0,0; 0,1; 0,2; 1,0; 1,1; 1,2 ])
+      (pas_vide_of_list [ 0; 1 ])
+      (pas_vide_of_list [ 0; 1; 2 ])
+  ]
+
 (* Main *)
 
 let () =
@@ -230,4 +279,5 @@ let () =
   ; "Zip/Zip-Rev", suite_zip_zip_rev
   ; "Tous", suite_tous
   ; "Quelque", suite_quelque
+  ; "Produit Cartesian", suite_prod_cartesian
   ]

@@ -78,3 +78,18 @@ let rec tous (f : 'a -> bool) (xs : 'a pas_vide) : bool = match xs with
 let rec quelque (f : 'a -> bool) (xs : 'a pas_vide) : bool = match xs with
   | Feui x -> f x
   | Cons (h, ts) -> f h || quelque f ts
+
+let prod_cartesian (xs : 'a pas_vide) (ys : 'b pas_vide) : ('a * 'b) pas_vide =
+  let rec aux_sub (x : 'a) (acc : ('a * 'b) pas_vide) = function
+    | Feui y -> Cons ((x,y), acc)
+    | Cons (yh,yts) -> aux_sub x (Cons ((x,yh), acc)) yts
+  in
+  let rec aux_principle (acc : ('a * 'b) pas_vide) (ys : 'b pas_vide) = function
+    | Feui x -> aux_sub x acc ys
+    | Cons (xh,xts) -> aux_principle (aux_sub xh acc ys) ys xts
+  in
+  match (xs, ys) with
+    | (Feui x, Feui y) -> singleton (x, y)
+    | (Feui x, Cons (yh,yts)) -> aux_sub x (Feui (x, yh)) yts
+    | (Cons (xh,xts), (Feui y as ys)) -> aux_principle (Feui (xh,y)) ys xts
+    | (Cons (xh,xts), (Cons (yh,yts) as ys)) -> aux_principle (aux_sub xh (Feui (xh,yh)) yts) ys xts

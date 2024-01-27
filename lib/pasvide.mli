@@ -47,3 +47,6 @@ val tous : ('a -> bool) -> 'a pas_vide -> bool
 
 val quelque : ('a -> bool) -> 'a pas_vide -> bool
 (** Verifiez si il y en a un element dans un pas-vide qui satisfait un predicat *)
+
+val prod_cartesian : 'a pas_vide -> 'b pas_vide -> ('a * 'b) pas_vide
+(** Construisez tous les paires possibles. C'est un produit cartesian *)
