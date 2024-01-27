@@ -185,8 +185,33 @@ let suite_zip_zip_rev =
   ; "Int_r0 rev", `Quick, test_zip_rev_int    (Feui (5, 7))                             (Feui 5)                      (Cons (7, Cons (8, Feui 9)))
   ]
 
-(* TODO - testes pour tous *)
-(* TODO - testes pour quelque *)
+(* Testes tous *)
+
+let test_tous exp f xs () =
+  let res = tous f xs in
+  Alcotest.(check bool) "" exp res
+
+let suite_tous =
+  [ "Int0", `Quick, test_tous true  (fun x -> x mod 2 = 0)    (Feui 2)
+  ; "Int1", `Quick, test_tous false (fun x -> x mod 2 = 0)    (Feui 1)
+  ; "Int2", `Quick, test_tous false (fun x -> x mod 2 = 0)    (Cons (5, Cons (2, Feui 6)))
+  ; "Int3", `Quick, test_tous false (fun x -> x mod 2 = 0)    (Cons (5, Cons (1, Feui 7)))
+  ; "Int4", `Quick, test_tous true  (fun x -> x mod 2 = 0)    (Cons (6, Cons (2, Feui 6)))
+  ]
+
+(* Testes quelque *)
+
+let test_quelque exp f xs () =
+  let res = quelque f xs in
+  Alcotest.(check bool) "" exp res
+
+let suite_quelque =
+  [ "Int0", `Quick, test_quelque true  (fun x -> x mod 2 = 0)    (Feui 2)
+  ; "Int1", `Quick, test_quelque false (fun x -> x mod 2 = 0)    (Feui 1)
+  ; "Int2", `Quick, test_quelque true  (fun x -> x mod 2 = 0)    (Cons (5, Cons (2, Feui 6)))
+  ; "Int3", `Quick, test_quelque false (fun x -> x mod 2 = 0)    (Cons (5, Cons (1, Feui 7)))
+  ; "Int4", `Quick, test_quelque true  (fun x -> x mod 2 = 0)    (Cons (6, Cons (2, Feui 6)))
+  ]
 
 (* Main *)
 
@@ -203,4 +228,6 @@ let () =
   ; "List of Pas-Vide", suite_list_of_pas_vide
   ; "Map/Map-Rev", suite_map_map_rev
   ; "Zip/Zip-Rev", suite_zip_zip_rev
+  ; "Tous", suite_tous
+  ; "Quelque", suite_quelque
   ]
