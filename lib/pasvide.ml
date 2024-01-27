@@ -18,7 +18,7 @@ let tail (xs : 'a pas_vide) : 'a pas_vide option = match xs with
   | Feui _ -> None
   | Cons (_, ts) -> Some ts
 
-let reverse (xs : 'a pas_vide) : 'a pas_vide =
+let renverse (xs : 'a pas_vide) : 'a pas_vide =
   let rec aux (acc : 'a pas_vide) = function
     | Feui x -> Cons (x, acc)
     | Cons (h, ts) -> aux (Cons (h, acc)) ts
@@ -34,7 +34,7 @@ let pas_vide_of_list (xs : 'a list) : 'a pas_vide =
   in
   match xs with
     | [] -> failwith "Liste est vide"
-    | h::ts -> reverse (aux (Feui h) ts)
+    | h::ts -> renverse (aux (Feui h) ts)
 
 let list_of_pas_vide (xs : 'a pas_vide) : 'a list =
   let rec aux (acc : 'a list) = function
@@ -52,7 +52,7 @@ let map_rev (f : 'a -> 'b) (xs : 'a pas_vide) : 'b pas_vide =
     | Feui x -> Feui (f x)
     | Cons (h, ts) -> aux (Feui (f h)) ts
 
-let map (f : 'a -> 'b) (xs : 'a pas_vide) : 'b pas_vide = reverse (map_rev f xs)
+let map (f : 'a -> 'b) (xs : 'a pas_vide) : 'b pas_vide = renverse (map_rev f xs)
 
 let zip_rev (xs : 'a pas_vide) (ys : 'b pas_vide) : ('a * 'b) pas_vide =
   let rec aux (acc : ('a * 'b) pas_vide) = function
@@ -67,7 +67,7 @@ let zip_rev (xs : 'a pas_vide) (ys : 'b pas_vide) : ('a * 'b) pas_vide =
     | Cons (x, _), Feui y -> Feui ((x, y))
     | Cons (xh, xts), Cons (yh, yts) -> aux (Feui (xh, yh)) (xts, yts)
 
-let zip (xs : 'a pas_vide) (ys : 'b pas_vide) : ('a * 'b) pas_vide = reverse (zip_rev xs ys)
+let zip (xs : 'a pas_vide) (ys : 'b pas_vide) : ('a * 'b) pas_vide = renverse (zip_rev xs ys)
 
 let rec tous (f : 'a -> bool) (xs : 'a pas_vide) : bool = match xs with
   | Feui x -> f x

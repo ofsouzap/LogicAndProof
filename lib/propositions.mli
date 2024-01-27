@@ -1,5 +1,5 @@
 type verite = bool
-(** Un valeur booleen *)
+(** Une valeur booleen *)
 
 val vrai : verite
 (** La verite vrai *)
@@ -25,10 +25,10 @@ type proposition =
 (** Une proposition logique *)
 
 type interpretation = (varnom * verite) list
-(** Un "mapping" de noms des variables au valeur booleen *)
+(** Un "mapping" de noms des variables au valeur booleene *)
 
 val interpretation_cherche : varnom -> interpretation -> verite option
-(** Trouvez le valuer d'un variable dans un interpretation *)
+(** Trouvez la valeure d'un variable dans un interpretation *)
 
 val interpretation_ajoute :
   varnom -> verite -> interpretation -> interpretation

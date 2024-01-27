@@ -105,18 +105,18 @@ let suite_tail =
   ; "Int2", `Quick, test_tail_int (Some (Cons (5, Feui 6))) (Cons (0, Cons (5, Feui 6)))
   ]
 
-(* Testes reverse *)
+(* Testes renverse *)
 
-let test_reverse t exp xs () =
-  let res = reverse xs in
+let test_renverse t exp xs () =
+  let res = renverse xs in
   Alcotest.check t "" exp res
 
-let test_reverse_int = test_reverse int_pas_vide
+let test_renverse_int = test_renverse int_pas_vide
 
-let suite_reverse =
-  [ "Int0", `Quick, test_reverse_int (Feui 3) (Feui 3)
-  ; "Int1", `Quick, test_reverse_int (Cons (5, Feui 4)) (Cons (4, Feui 5))
-  ; "Int2", `Quick, test_reverse_int (Cons (6, Cons (5, Feui 0))) (Cons (0, Cons (5, Feui 6)))
+let suite_renverse =
+  [ "Int0", `Quick, test_renverse_int (Feui 3) (Feui 3)
+  ; "Int1", `Quick, test_renverse_int (Cons (5, Feui 4)) (Cons (4, Feui 5))
+  ; "Int2", `Quick, test_renverse_int (Cons (6, Cons (5, Feui 0))) (Cons (0, Cons (5, Feui 6)))
   ]
 
 (* Testes pas_vide_of_list *)
@@ -198,7 +198,7 @@ let () =
   ; "Apposez", suite_apposez
   ; "Tete", suite_tete
   ; "Tail", suite_tail
-  ; "Reverse", suite_reverse
+  ; "Renverse", suite_renverse
   ; "Pas-Vide of List", suite_pas_vide_of_list
   ; "List of Pas-Vide", suite_list_of_pas_vide
   ; "Map/Map-Rev", suite_map_map_rev
