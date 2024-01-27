@@ -1,5 +1,5 @@
 type verite = bool
-(** Une valeur booleen *)
+(** Une valeur booleene *)
 
 val vrai : verite
 (** La verite vrai *)
@@ -13,7 +13,7 @@ type varnom = string
 type atome =
   | Lit of verite
   | Var of varnom
-(** Un atome d'une proposition. Soit un litteral, soit une variable *)
+(** Un atome d'une proposition. Soit un literal, soit une variable *)
 
 type proposition =
   | Atome of atome
@@ -25,27 +25,27 @@ type proposition =
 (** Une proposition logique *)
 
 type interpretation = (varnom * verite) list
-(** Un "mapping" de noms des variables au valeur booleene *)
+(** Un "mapping" de noms des variables a la valeur booleene *)
 
 val interpretation_cherche : varnom -> interpretation -> verite option
-(** Trouvez la valeure d'un variable dans un interpretation *)
+(** Trouvez la valeure d'une variable dans une interpretation *)
 
 val interpretation_ajoute :
   varnom -> verite -> interpretation -> interpretation
-(** Modifiez un interpretation pour definir un valuer pour un nom *)
+(** Modifiez une interpretation pour definir un valuer pour un nom *)
 
 type proposition_simple =
   | Atome of atome
   | Ou of proposition_simple Pasvide.pas_vide
   | Et of proposition_simple Pasvide.pas_vide
   | Pas of proposition_simple
-(** Un proposition simple, pas avec les implications *)
+(** Une proposition simple, sans implications *)
 
 val prop_au_simple : proposition -> proposition_simple
-(** Mettez un proposition brut en proposition simple, sans implications *)
+(** Mettez une proposition brute en proposition simple, sans implication *)
 
 val evaluez : interpretation -> proposition -> verite
-(** Evaluez un proposition avec un interpretation *)
+(** Evaluez une proposition avec une interpretation *)
 
 type neg_atome =
   | Atome of atome
@@ -56,7 +56,7 @@ type proposition_nnf =
   | Atome of neg_atome
   | Ou of proposition_nnf Pasvide.pas_vide
   | Et of proposition_nnf Pasvide.pas_vide
-(** Un proposition en NNF ("Negation Normal Form"), ou les "Pas"s sont sur les atomes seuls *)
+(** Une proposition en NNF ("Negation Normal Form"), ou les "Pas"s sont sur les atomes seuls *)
 
 val simple_au_nnf : proposition_simple -> proposition_nnf
-(** Mettez un proposition simple en forme NNF *)
+(** Mettez une proposition simple en forme NNF *)
