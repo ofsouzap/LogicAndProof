@@ -17,8 +17,8 @@ type atome =
 
 type proposition =
   | Atome of atome
-  | Ou of proposition * proposition
-  | Et of proposition * proposition
+  | Ou of proposition Pasvide.pas_vide
+  | Et of proposition Pasvide.pas_vide
   | Pas of proposition
   | Impl of proposition * proposition
   | BiImpl of proposition * proposition
@@ -36,8 +36,8 @@ val interpretation_ajoute :
 
 type proposition_simple =
   | Atome of atome
-  | Ou of proposition_simple * proposition_simple
-  | Et of proposition_simple * proposition_simple
+  | Ou of proposition_simple Pasvide.pas_vide
+  | Et of proposition_simple Pasvide.pas_vide
   | Pas of proposition_simple
 (** Un proposition simple, pas avec les implications *)
 
@@ -47,13 +47,15 @@ val prop_au_simple : proposition -> proposition_simple
 val evaluez : interpretation -> proposition -> verite
 (** Evaluez un proposition avec un interpretation *)
 
-type neg_atome = Atome of atome | PasAtome of atome
+type neg_atome =
+  | Atome of atome
+  | PasAtome of atome
 (** Un atome qui peut etre negatif *)
 
 type proposition_nnf =
-    Atome of neg_atome
-  | Ou of proposition_nnf * proposition_nnf
-  | Et of proposition_nnf * proposition_nnf
+  | Atome of neg_atome
+  | Ou of proposition_nnf Pasvide.pas_vide
+  | Et of proposition_nnf Pasvide.pas_vide
 (** Un proposition en NNF ("Negation Normal Form"), ou les "Pas"s sont sur les atomes seuls *)
 
 val simple_au_nnf : proposition_simple -> proposition_nnf

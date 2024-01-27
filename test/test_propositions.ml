@@ -1,3 +1,4 @@
+open LogicAndProof.Pasvide
 open LogicAndProof.Propositions
 
 let test_sante () =
@@ -18,7 +19,7 @@ let rec appliquez_don_prop (nom : string) (p : proposition) (xs : ((proposition 
   | (f,s)::ts -> (nom ^ " - " ^ s, `Quick, f p) :: appliquez_don_prop nom p ts
 
 (* (P . Q) -> P *)
-let suite_evaluation_0 = appliquez_don_prop "(P.Q)->P" (Impl (Et (Atome (Var "P"), Atome (Var "Q")), Atome (Var "P")))
+let suite_evaluation_0 = appliquez_don_prop "(P.Q)->P" (Impl (Et (pas_vide_of_list [((Atome (Var "P")) : proposition); (Atome (Var "Q"))]), Atome (Var "P")))
   [ testez_evaluation vrai ["P", faux; "Q", faux], "00"
   ; testez_evaluation vrai ["P", faux; "Q", vrai], "01"
   ; testez_evaluation vrai ["P", vrai; "Q", faux], "10"
@@ -26,7 +27,7 @@ let suite_evaluation_0 = appliquez_don_prop "(P.Q)->P" (Impl (Et (Atome (Var "P"
   ]
 
 (* (P + Q) -> P *)
-let suite_evaluation_1 = appliquez_don_prop "(P+Q)->P" (Impl (Ou (Atome (Var "P"), Atome (Var "Q")), Atome (Var "P")))
+let suite_evaluation_1 = appliquez_don_prop "(P+Q)->P" (Impl (Ou (pas_vide_of_list [(Atome (Var "P") : proposition); Atome (Var "Q")]), Atome (Var "P")))
   [ testez_evaluation vrai ["P", faux; "Q", faux], "00"
   ; testez_evaluation faux ["P", faux; "Q", vrai], "01"
   ; testez_evaluation vrai ["P", vrai; "Q", faux], "10"
@@ -34,7 +35,7 @@ let suite_evaluation_1 = appliquez_don_prop "(P+Q)->P" (Impl (Ou (Atome (Var "P"
   ]
 
 (* P <-> (t . (Q + R)) *)
-let suite_evaluation_2 = appliquez_don_prop "P<->(t.(Q+R))" (BiImpl ((Atome (Var "P")), (Et ((Atome (Lit vrai)), (Ou ((Atome (Var "Q")), (Atome (Var "R"))))))))
+let suite_evaluation_2 = appliquez_don_prop "P<->(t.(Q+R))" (BiImpl ((Atome (Var "P")), (Et (paire (Atome (Lit vrai) : proposition) (Ou (paire (Atome (Var "Q") : proposition) (Atome (Var "R"))))))))
   [ testez_evaluation vrai ["P", faux; "Q", faux; "R", faux], "000"
   ; testez_evaluation faux ["P", faux; "Q", faux; "R", vrai], "001"
   ; testez_evaluation faux ["P", faux; "Q", vrai; "R", faux], "010"

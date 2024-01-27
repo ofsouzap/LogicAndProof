@@ -4,6 +4,8 @@ type 'a pas_vide =
 
 let singleton (x : 'a) : 'a pas_vide = Feui x
 
+let paire (a : 'a) (b : 'a) : 'a pas_vide = Cons (a, Feui b)
+
 let ajoutez (x : 'a ) (xs : 'a pas_vide) : 'a pas_vide = Cons (x, xs)
 
 let rec apposez (x : 'a) (xs : 'a pas_vide) : 'a pas_vide = match xs with

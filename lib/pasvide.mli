@@ -6,6 +6,9 @@ type 'a pas_vide =
 val singleton : 'a -> 'a pas_vide
 (** Cree un pas-vide avec une seule valeur *)
 
+val paire : 'a -> 'a -> 'a pas_vide
+(** Cree un pas-vide avec deux valeurs *)
+
 val apposez : 'a -> 'a pas_vide -> 'a pas_vide
 (** Apposez une valeur au fin d'un pas-vide *)
 
