@@ -4,17 +4,19 @@ type 'a pas_vide =
 
 let singleton (x : 'a) : 'a pas_vide = Feui x
 
-let rec ajoutez (x : 'a) (xs : 'a pas_vide) : 'a pas_vide = match xs with
-  | Cons (h, ts) -> Cons (h, ajoutez x ts)
+let ajoutez (x : 'a ) (xs : 'a pas_vide) : 'a pas_vide = Cons (x, xs)
+
+let rec apposez (x : 'a) (xs : 'a pas_vide) : 'a pas_vide = match xs with
+  | Cons (h, ts) -> Cons (h, apposez x ts)
   | Feui h -> Cons (h, Feui (x))
 
 let tete (xs : 'a pas_vide) : 'a = match xs with
   | Feui x -> x
   | Cons (h, _) -> h
 
-let tail (xs : 'a pas_vide) : 'a option = match xs with
+let tail (xs : 'a pas_vide) : 'a pas_vide option = match xs with
   | Feui _ -> None
-  | Cons (h, _) -> Some h
+  | Cons (_, ts) -> Some ts
 
 let reverse (xs : 'a pas_vide) : 'a pas_vide =
   let rec aux (acc : 'a pas_vide) = function
@@ -32,7 +34,14 @@ let pas_vide_of_list (xs : 'a list) : 'a pas_vide =
   in
   match xs with
     | [] -> failwith "Liste est vide"
-    | h::ts -> aux (Feui h) ts
+    | h::ts -> reverse (aux (Feui h) ts)
+
+let list_of_pas_vide (xs : 'a pas_vide) : 'a list =
+  let rec aux (acc : 'a list) = function
+    | Feui x -> x :: acc
+    | Cons (h, ts) -> aux (h :: acc) ts
+  in
+  List.rev (aux [] xs)
 
 let map_rev (f : 'a -> 'b) (xs : 'a pas_vide) : 'b pas_vide =
   let rec aux (acc : 'b pas_vide) = function

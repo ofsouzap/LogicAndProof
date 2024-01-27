@@ -6,13 +6,16 @@ type 'a pas_vide =
 val singleton : 'a -> 'a pas_vide
 (** Cree une pas-vide avec un seul valeur *)
 
+val apposez : 'a -> 'a pas_vide -> 'a pas_vide
+(** Apposez un valeur au fin d'une pas-vide *)
+
 val ajoutez : 'a -> 'a pas_vide -> 'a pas_vide
-(** Ajoutez un valeur sur une pas-vide *)
+(** Ajoutez un valeur au debut d'une pas-vide *)
 
 val tete : 'a pas_vide -> 'a
 (** Prennez le premier valeur d'un pas-vide *)
 
-val tail : 'a pas_vide -> 'a option
+val tail : 'a pas_vide -> 'a pas_vide option
 (** Essayez de prendre le "tail" d'une pas-vide. Sinon, on retour None *)
 
 val reverse : 'a pas_vide -> 'a pas_vide
@@ -20,6 +23,9 @@ val reverse : 'a pas_vide -> 'a pas_vide
 
 val pas_vide_of_list : 'a list -> 'a pas_vide
 (** Construisez la pas-vide d'une liste. Si la liste est vide, ca echoue *)
+
+val list_of_pas_vide : 'a pas_vide -> 'a list
+(** Construisez la liste d'une pas-vide *)
 
 val map_rev : ('a -> 'b) -> 'a pas_vide -> 'b pas_vide
 (** Mappez une pas-vide avec une mappage. Le resultat est reverse *)
