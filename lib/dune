@@ -1,2 +1,3 @@
 (library
- (name LogicAndProof))
+ (name LogicAndProof)
+ (libraries fmt))
