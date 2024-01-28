@@ -26,6 +26,23 @@ let rec interpretation_cherche (nom : varnom) (i : interpretation) : verite opti
 let interpretation_ajoute (nom : varnom) (b : verite) (i : interpretation) : interpretation =
   (nom, b) :: i
 
+(* TODO - faisez ca mieux *)
+let rec interpretations_possibles (vars : varnom list) : interpretation list = match vars with
+  | [] -> []
+  | h::ts ->
+    let sub = interpretations_possibles ts in
+    List.concat_map
+      ( fun i ->
+        [ interpretation_ajoute h vrai i
+        ; interpretation_ajoute h faux i
+        ] )
+      sub
+
+let propositions_equivalents vars eval1 eval2 p1 p2 =
+  List.for_all
+    (fun i -> eval1 i p1 = eval2 i p2)
+    (interpretations_possibles (Sets.list_of_set vars))
+
 let prop_var_libres (p : proposition) : varnom Sets.set =
   let rec aux acc = function
     | Atome (Lit _) -> acc

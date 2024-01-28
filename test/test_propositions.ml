@@ -68,6 +68,18 @@ let suite_evaluation =
   @ suite_evaluation_1
   @ suite_evaluation_2
 
+(* Comparez propositions *)
+
+let testez_propositions_equivalents (exp : bool) (p1 : proposition) (p2 : proposition) () =
+  let vars = union (prop_var_libres p1) (prop_var_libres p2) in
+  let res = propositions_equivalents vars evaluez evaluez p1 p2 in
+  Alcotest.(check bool) "" exp res
+
+let suite_propositions_equivalents =
+  [ "", `Quick, testez_propositions_equivalents vrai (Impl ((et_prop [var_prop "P"; var_prop "Q"]), (var_prop "P"))) (lit_prop vrai)
+  ; "", `Quick, testez_propositions_equivalents vrai (et_prop [Impl ((var_prop "P"), (var_prop "Q")); Impl ((var_prop "Q"), (var_prop "P"))]) (BiImpl ((var_prop "P"), (var_prop "Q")))
+  ]
+
 (* Simple au NNF *)
 
 (* TODO *)
@@ -194,6 +206,7 @@ let () =
   [ "Sante", suite_sante
   ; "Proposition Variables Libres", suite_prop_var_libres
   ; "Evaluation", suite_evaluation
+  ; "Propositions Equivalents", suite_propositions_equivalents
   ; "NNF Variables Libres", suite_nnf_var_libres
   ; "Evaluation NNF", suite_evaluation_nnf
   ; "DNF Variables Libres", suite_dnf_var_libres

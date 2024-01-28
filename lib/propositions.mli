@@ -34,6 +34,9 @@ val interpretation_ajoute :
   varnom -> verite -> interpretation -> interpretation
 (** Modifiez une interpretation pour definir un valuer pour un nom *)
 
+val propositions_equivalents : varnom Sets.set -> (interpretation -> 'a -> bool) -> (interpretation -> 'b -> bool) -> 'a -> 'b -> bool
+(** Comparez des propositions utilisant leurs fonctions d'evaluation pour voir si ils sont equivalents *)
+
 val prop_var_libres : proposition -> varnom Sets.set
 (** Trouve les noms des variables libres dans une proposition *)
 
