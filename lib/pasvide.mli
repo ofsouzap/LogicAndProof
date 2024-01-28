@@ -15,6 +15,12 @@ val apposez : 'a -> 'a pas_vide -> 'a pas_vide
 val ajoutez : 'a -> 'a pas_vide -> 'a pas_vide
 (** Ajoutez une valeur au debut d'un pas-vide *)
 
+val enchainez : 'a pas_vide -> 'a pas_vide -> 'a pas_vide
+(** Enchainez deux pas-vides *)
+
+val (@:) : 'a pas_vide -> 'a pas_vide -> 'a pas_vide
+(** Enchainez deux pas-vides *)
+
 val tete : 'a pas_vide -> 'a
 (** Prenez la premiere valeur d'un pas-vide *)
 

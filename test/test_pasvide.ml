@@ -99,6 +99,23 @@ let suite_apposez =
   ; "String1", `Quick, test_apposez_string "tgrs" "dqe"
   ]
 
+(* Testes apposez *)
+
+let test_enchainez t x1 x2 () =
+  let res = list_of_pas_vide (enchainez x1 x2) in
+  let exp = list_of_pas_vide x1 @ list_of_pas_vide x2 in
+  Alcotest.check t "" exp res
+
+let test_enchainez_int = test_enchainez (Alcotest.(list int))
+
+let suite_enchainez =
+  [ "Seules", `Quick, test_enchainez_int (pas_vide_of_list [0]) (pas_vide_of_list [1])
+  ; "Gauche est seule", `Quick, test_enchainez_int (pas_vide_of_list [0]) (pas_vide_of_list [1;2])
+  ; "Droite est seule", `Quick, test_enchainez_int (pas_vide_of_list [0;1]) (pas_vide_of_list [1])
+  ; "Pas de seule", `Quick, test_enchainez_int (pas_vide_of_list [0;1]) (pas_vide_of_list [1;3;4])
+  ]
+
+
 (* Testes tete *)
 
 let test_tete exp xs () =
@@ -292,6 +309,7 @@ let () =
   [ "Singleton", suite_singleton
   ; "Ajoutez", suite_ajoutez
   ; "Apposez", suite_apposez
+  ; "Enchainez", suite_enchainez
   ; "Tete", suite_tete
   ; "Tail", suite_tail
   ; "Renverse", suite_renverse

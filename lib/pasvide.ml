@@ -12,6 +12,12 @@ let rec apposez (x : 'a) (xs : 'a pas_vide) : 'a pas_vide = match xs with
   | Cons (h, ts) -> Cons (h, apposez x ts)
   | Feui h -> Cons (h, Feui (x))
 
+let rec enchainez (xs : 'a pas_vide) (ys : 'a pas_vide) : 'a pas_vide = match xs with
+  | Feui x -> Cons (x, ys)
+  | Cons (xh,xts) -> Cons (xh, enchainez xts ys)
+
+let (@:) = enchainez
+
 let tete (xs : 'a pas_vide) : 'a = match xs with
   | Feui x -> x
   | Cons (h, _) -> h
