@@ -8,6 +8,15 @@ let paire (a : 'a) (b : 'a) : 'a pas_vide = Cons (a, Feui b)
 
 let ajoutez (x : 'a ) (xs : 'a pas_vide) : 'a pas_vide = Cons (x, xs)
 
+let pas_vide_arbitraire (arb : 'a QCheck.Gen.t) : 'a pas_vide QCheck.Gen.t = QCheck.Gen.(sized @@ fix
+  ( fun self n -> match n with
+    | 0 -> map (fun x -> Feui x) arb
+    | n -> frequency
+      [ 1, map (fun x -> Feui x) arb
+      ; 2, map2 (fun h ts -> Cons (h,ts)) arb (self (n-1))
+      ]
+  ))
+
 let rec apposez (x : 'a) (xs : 'a pas_vide) : 'a pas_vide = match xs with
   | Cons (h, ts) -> Cons (h, apposez x ts)
   | Feui h -> Cons (h, Feui (x))

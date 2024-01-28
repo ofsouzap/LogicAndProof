@@ -64,6 +64,8 @@ type proposition_nnf =
   | Et of proposition_nnf Pasvide.pas_vide
 (** Une proposition en NNF ("Negation Normal Form"), ou les "Pas"s sont sur les atomes seuls *)
 
+val nnf_arbitraire : proposition_nnf QCheck.Gen.t
+
 val simple_au_nnf : proposition_simple -> proposition_nnf
 (** Mettez une proposition simple en forme NNF *)
 
@@ -78,6 +80,8 @@ type terme_dnf = neg_atome Pasvide.pas_vide
 
 type proposition_dnf = terme_dnf Pasvide.pas_vide
 (** Une proposition en DNF ("Disjunctive Normal Form"), comme "(A + B) . C . (D + E + F)" *)
+
+val dnf_arbitraire : proposition_dnf QCheck.Gen.t
 
 val nnf_au_dnf : proposition_nnf -> proposition_dnf
 (** Mettez une proposition en forme NNF en forme DNF *)

@@ -13,6 +13,8 @@ let suite =
   (* TODO - plus testes *)
   ]
 
+(* TODO - testes avec QCheck *)
+
 let () =
   let open Alcotest in
   run "Sets"

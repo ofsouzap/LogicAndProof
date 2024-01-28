@@ -1,3 +1,3 @@
 (tests
  (names test_propositions test_pasvide test_sets)
- (libraries LogicAndProof alcotest fmt))
+ (libraries LogicAndProof alcotest fmt qcheck qcheck-alcotest))
