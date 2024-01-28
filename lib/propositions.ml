@@ -26,6 +26,10 @@ let rec interpretation_cherche (nom : varnom) (i : interpretation) : verite opti
 let interpretation_ajoute (nom : varnom) (b : verite) (i : interpretation) : interpretation =
   (nom, b) :: i
 
+let evaluez_atome (i : interpretation) (a : atome) : verite = match a with
+  | Lit b -> b
+  | Var n -> (match interpretation_cherche n i with | None -> false | Some b -> b)
+
 type proposition_simple =
   | Atome of atome
   | Ou of proposition_simple Pasvide.pas_vide
@@ -50,8 +54,7 @@ let rec prop_au_simple (p : proposition) : proposition_simple = match p with
       )
 
 let rec evaluez_simple (i : interpretation) = function
-  | Atome (Lit b) -> b
-  | Atome (Var n) -> (match interpretation_cherche n i with | None -> false | Some b -> b)
+  | Atome a -> evaluez_atome i a
   | Ou xs -> Pasvide.quelque (evaluez_simple i) xs
   | Et xs -> Pasvide.tous (evaluez_simple i) xs
   | Pas x -> not (evaluez_simple i x)
@@ -82,6 +85,15 @@ let rec simple_au_nnf (p : proposition_simple) : proposition_nnf = match p with
   | Pas (Atome a) -> Atome (PasAtome a)
   | Pas (Pas x) -> simple_au_nnf x
 
+let evaluez_neg_atome (i : interpretation) (a : neg_atome) : verite = match a with
+  | Atome a -> evaluez_atome i a
+  | PasAtome a -> not (evaluez_atome i a)
+
+let rec evaluez_nnf (i : interpretation) (p : proposition_nnf) : verite = match p with
+  | Atome a -> evaluez_neg_atome i a
+  | Ou xs -> Pasvide.quelque (evaluez_nnf i) xs
+  | Et xs -> Pasvide.tous (evaluez_nnf i) xs
+
 type terme_dnf = neg_atome Pasvide.pas_vide
 
 type proposition_dnf = terme_dnf Pasvide.pas_vide
@@ -108,5 +120,9 @@ let rec nnf_au_dnf (p : proposition_nnf) : proposition_dnf = match p with
   | Et xs ->
     let xs' = Pasvide.map nnf_au_dnf xs in
     fusionnez_dnf xs'
+
+let evaluez_terme_dnf (i : interpretation) = Pasvide.tous (evaluez_neg_atome i)
+
+let evaluez_dnf (i : interpretation) = Pasvide.quelque (evaluez_terme_dnf i)
 
 (** TODO - faisez le truc pour transformer les proposition en CNF *)

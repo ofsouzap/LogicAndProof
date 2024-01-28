@@ -61,6 +61,9 @@ type proposition_nnf =
 val simple_au_nnf : proposition_simple -> proposition_nnf
 (** Mettez une proposition simple en forme NNF *)
 
+val evaluez_nnf : interpretation -> proposition_nnf -> verite
+(** Evaluez une proposition en forme NNF *)
+
 type terme_dnf = neg_atome Pasvide.pas_vide
 (** Une terme d'une proposition en DNF *)
 
@@ -69,3 +72,6 @@ type proposition_dnf = terme_dnf Pasvide.pas_vide
 
 val nnf_au_dnf : proposition_nnf -> proposition_dnf
 (** Mettez une proposition en forme NNF en forme DNF *)
+
+val evaluez_dnf : interpretation -> proposition_dnf -> verite
+(** Evaluez une proposition en forme DNF *)
