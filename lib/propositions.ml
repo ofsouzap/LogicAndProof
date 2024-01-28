@@ -82,4 +82,31 @@ let rec simple_au_nnf (p : proposition_simple) : proposition_nnf = match p with
   | Pas (Atome a) -> Atome (PasAtome a)
   | Pas (Pas x) -> simple_au_nnf x
 
-(** TODO - faisez le truc pour transformer les proposition en CNF et en DNF *)
+type terme_dnf = neg_atome Pasvide.pas_vide
+
+type proposition_dnf = terme_dnf Pasvide.pas_vide
+
+let fussionnez_deux_dnf (x : proposition_dnf) (y : proposition_dnf) : proposition_dnf =
+  let zs = Pasvide.prod_cartesian x y in
+  Pasvide.map_rev
+    (fun (a,b) -> Pasvide.enchainez a b)
+    zs
+
+let fusionnez_dnf (xs : proposition_dnf Pasvide.pas_vide) : proposition_dnf = match xs with
+  | Feui x -> x
+  | Cons (xh,xts) -> Pasvide.foldl fussionnez_deux_dnf xh xts
+
+let aplatissez_dnf (xs : proposition_dnf Pasvide.pas_vide) : proposition_dnf = match xs with
+  | Feui x -> x
+  | Cons (xh, xts) -> Pasvide.foldl Pasvide.enchainez xh xts
+
+let rec nnf_au_dnf (p : proposition_nnf) : proposition_dnf = match p with
+  | Atome a -> Pasvide.singleton (Pasvide.singleton a)
+  | Ou xs ->
+    let xs' = Pasvide.map nnf_au_dnf xs in
+    aplatissez_dnf xs'
+  | Et xs ->
+    let xs' = Pasvide.map nnf_au_dnf xs in
+    fusionnez_dnf xs'
+
+(** TODO - faisez le truc pour transformer les proposition en CNF *)

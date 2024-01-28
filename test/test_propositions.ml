@@ -10,6 +10,8 @@ let suite_sante =
   [ "l'addition", `Quick, test_sante
   ]
 
+(* Evaluation *)
+
 let testez_evaluation (exp : verite) (don_i : interpretation) (don_p : proposition) () =
   let res = evaluez don_i don_p in
   Alcotest.(check bool) "evaluation" exp res
@@ -50,6 +52,20 @@ let suite_evaluation =
     suite_evaluation_0
   @ suite_evaluation_1
   @ suite_evaluation_2
+
+(* Proposition au Simple *)
+
+(* TODO *)
+
+(* Simple au NNF *)
+
+(* TODO *)
+
+(* NNF au DNF *)
+
+(* TODO *)
+
+(* Main *)
 
 let () =
   let open Alcotest in
