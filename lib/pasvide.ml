@@ -45,14 +45,21 @@ let list_of_pas_vide (xs : 'a pas_vide) : 'a list =
   in
   List.rev (aux [] xs)
 
+let rec foldl (f : 'b -> 'a -> 'b) (acc : 'b) (xs : 'a pas_vide) : 'b = match xs with
+  | Feui x -> f acc x
+  | Cons (h,ts) -> foldl f (f acc h) ts
+
+let rec foldr (f : 'a -> 'b -> 'b) (acc : 'b) (xs : 'a pas_vide) : 'b = match xs with
+  | Feui x -> f x acc
+  | Cons (h,ts) -> f h (foldr f acc ts)
+
 let map_rev (f : 'a -> 'b) (xs : 'a pas_vide) : 'b pas_vide =
-  let rec aux (acc : 'b pas_vide) = function
-    | Feui x -> Cons (f x, acc)
-    | Cons (h, ts) -> aux (Cons (f h, acc)) ts
+  let foldf (acc : 'b pas_vide) (x : 'a) : 'b pas_vide =
+    ajoutez (f x) acc
   in
   match xs with
     | Feui x -> Feui (f x)
-    | Cons (h, ts) -> aux (Feui (f h)) ts
+    | Cons (h,ts) -> foldl foldf (Feui (f h)) ts
 
 let map (f : 'a -> 'b) (xs : 'a pas_vide) : 'b pas_vide = renverse (map_rev f xs)
 

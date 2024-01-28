@@ -30,6 +30,12 @@ val pas_vide_of_list : 'a list -> 'a pas_vide
 val list_of_pas_vide : 'a pas_vide -> 'a list
 (** Construisez la liste d'un pas-vide *)
 
+val foldl : ('b -> 'a -> 'b) -> 'b -> 'a pas_vide -> 'b
+(** Faisez une operation "fold" sur un pas-vide *)
+
+val foldr : ('a -> 'b -> 'b) -> 'b -> 'a pas_vide -> 'b
+(** Faisez une operation "fold" sur un pas-vide *)
+
 val map_rev : ('a -> 'b) -> 'a pas_vide -> 'b pas_vide
 (** Mappez un pas-vide avec une mappage. Le resultat est renverse *)
 

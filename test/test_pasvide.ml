@@ -165,6 +165,28 @@ let suite_list_of_pas_vide =
   ; "Int2", `Quick, test_list_of_pas_vide_int [0;5;6] (Cons (0, Cons (5, Feui 6)))
   ]
 
+(* Testes fold *)
+
+let test_foldf t foldf exp f xs acc () =
+  let res = foldf f acc xs in
+  Alcotest.check t "" exp res
+
+let test_foldl_int = test_foldf Alcotest.int foldl
+let test_foldr_int = test_foldf Alcotest.int foldr
+let test_foldl_int_list = test_foldf Alcotest.(list int) foldl
+let test_foldr_int_list = test_foldf Alcotest.(list int) foldr
+
+let suite_foldl_foldr =
+  [ "Feui foldl sym", `Quick, test_foldl_int 4 ( + ) (Feui 3) 1
+  ; "Feui foldr sym", `Quick, test_foldr_int 4 ( + ) (Feui 3) 1
+  ; "Deux foldl sym", `Quick, test_foldl_int 13 ( + ) (Cons (5, Feui 6)) 2
+  ; "Deux foldr sym", `Quick, test_foldr_int 13 ( + ) (Cons (5, Feui 6)) 2
+  ; "Trois foldl sym", `Quick, test_foldl_int 18 ( + ) (Cons (5, Cons (6, Feui 8))) (-1)
+  ; "Trois foldl sym", `Quick, test_foldr_int 18 ( + ) (Cons (5, Cons (6, Feui 8))) (-1)
+  ; "foldl pas-sym", `Quick, test_foldl_int_list [8;6;5] (fun acc x -> x :: acc) (Cons (5, Cons (6, Feui 8))) []
+  ; "foldr pas-sym", `Quick, test_foldr_int_list [5;6;8] (fun x acc -> x :: acc) (Cons (5, Cons (6, Feui 8))) []
+  ]
+
 (* Testes map/map_rev *)
 
 let test_mapf t mapf exp f xs () =
@@ -275,6 +297,7 @@ let () =
   ; "Renverse", suite_renverse
   ; "Pas-Vide of List", suite_pas_vide_of_list
   ; "List of Pas-Vide", suite_list_of_pas_vide
+  ; "Foldl/Foldr", suite_foldl_foldr
   ; "Map/Map-Rev", suite_map_map_rev
   ; "Zip/Zip-Rev", suite_zip_zip_rev
   ; "Tous", suite_tous
