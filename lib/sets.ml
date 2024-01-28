@@ -21,17 +21,30 @@ let rec ajoutez x = function
     then xs
     else h :: ajoutez x ts
 
-let list_of_set (xs : 'a set) : 'a list = xs
-
-let set_of_list (xs : 'a list) : 'a set =
-  List.fold_left (fun acc x -> ajoutez x acc) vide xs
-
 let rec membre x = function
   | [] -> false
   | h::ts ->
     if x = h
     then true
     else membre x ts
+
+let rec union xs = function
+  | [] -> xs
+  | h::ts -> union (ajoutez h xs) ts
+
+let intersection xs =
+  let rec aux acc = function
+    | [] -> acc
+    | h::ts -> aux
+      (if membre h xs then ajoutez h acc else acc)
+      ts
+  in
+  aux vide
+
+let list_of_set (xs : 'a set) : 'a list = xs
+
+let set_of_list (xs : 'a list) : 'a set =
+  List.fold_left (fun acc x -> ajoutez x acc) vide xs
 
 let rec pareil (xs : 'a list) (ys : 'a list) : bool =
   let rec essaiez_enlever (x : 'a) (acc : 'a list) = function

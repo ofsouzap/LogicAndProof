@@ -10,10 +10,14 @@ val singleton : 'a -> 'a set
 
 val ajoutez : 'a -> 'a set -> 'a set
 
+val membre : 'a -> 'a set -> bool
+
+val intersection : 'a set -> 'a set -> 'a set
+
+val union : 'a set -> 'a set -> 'a set
+
 val list_of_set : 'a set -> 'a list
 
 val set_of_list : 'a list -> 'a set
-
-val membre : 'a -> 'a set -> bool
 
 val pareil : 'a set -> 'a set -> bool
