@@ -6,6 +6,10 @@ let rec formateur_int_set ppf = function
   | [] -> Fmt.pf ppf ""
   | h::ts -> Fmt.pf ppf "%d, %a" h formateur_int_set ts
 
+let rec formateur_string_set ppf = function
+  | [] -> Fmt.pf ppf ""
+  | h::ts -> Fmt.pf ppf "%s, %a" h formateur_string_set ts
+
 let vide : 'a set = []
 
 let singleton (x : 'a) : 'a set = [x]

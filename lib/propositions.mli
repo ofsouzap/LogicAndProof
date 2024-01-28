@@ -34,6 +34,9 @@ val interpretation_ajoute :
   varnom -> verite -> interpretation -> interpretation
 (** Modifiez une interpretation pour definir un valuer pour un nom *)
 
+val prop_var_libres : proposition -> varnom Sets.set
+(** Trouve les noms des variables libres dans une proposition *)
+
 type proposition_simple =
   | Atome of atome
   | Ou of proposition_simple Pasvide.pas_vide
@@ -61,6 +64,9 @@ type proposition_nnf =
 val simple_au_nnf : proposition_simple -> proposition_nnf
 (** Mettez une proposition simple en forme NNF *)
 
+val nnf_var_libres : proposition_nnf -> varnom Sets.set
+(** Trouve les noms des variables libres dans une proposition en forme NNF *)
+
 val evaluez_nnf : interpretation -> proposition_nnf -> verite
 (** Evaluez une proposition en forme NNF *)
 
@@ -72,6 +78,9 @@ type proposition_dnf = terme_dnf Pasvide.pas_vide
 
 val nnf_au_dnf : proposition_nnf -> proposition_dnf
 (** Mettez une proposition en forme NNF en forme DNF *)
+
+val dnf_var_libres : proposition_dnf -> varnom Sets.set
+(** Trouve les noms des variables libres dans une proposition en forme DNF *)
 
 val evaluez_dnf : interpretation -> proposition_dnf -> verite
 (** Evaluez une proposition en forme DNF *)

@@ -2,6 +2,8 @@ type 'a set
 
 val formateur_int_set : Format.formatter -> int set -> unit
 
+val formateur_string_set : Format.formatter -> string set -> unit
+
 val vide : 'a set
 
 val singleton : 'a -> 'a set

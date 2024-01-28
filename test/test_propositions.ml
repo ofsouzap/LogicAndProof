@@ -1,6 +1,9 @@
+open LogicAndProof.Sets
 open LogicAndProof.Pasvide
 open LogicAndProof.Propositions
 open LogicAndProof.PropositionsAbr
+
+let varnom_set : ('a set) Alcotest.testable = Alcotest.testable formateur_string_set pareil
 
 let test_sante () =
   let exp = 5 in
@@ -9,6 +12,18 @@ let test_sante () =
 
 let suite_sante =
   [ "l'addition", `Quick, test_sante
+  ]
+
+(* Propositions variables libres *)
+
+let testez_prop_var_libres (exp : varnom set) (p : proposition) () =
+  let res = prop_var_libres p in
+  Alcotest.check varnom_set "" exp res
+
+let suite_prop_var_libres =
+  [ "Vide", `Quick, testez_prop_var_libres vide (Impl ((lit_prop vrai), (ou_prop [lit_prop faux; lit_prop vrai])))
+  ; "Un", `Quick, testez_prop_var_libres (set_of_list ["A"]) (Impl ((var_prop "A"), (ou_prop [lit_prop faux; lit_prop vrai])))
+  ; "Deux", `Quick, testez_prop_var_libres (set_of_list ["A";"B"]) (Impl ((var_prop "A"), (ou_prop [var_prop "B"; var_prop "B"])))
   ]
 
 (* Evaluation *)
@@ -57,6 +72,18 @@ let suite_evaluation =
 
 (* TODO *)
 
+(* NNF variables libres *)
+
+let testez_nnf_var_libres (exp : varnom set) (p : proposition_nnf) () =
+  let res = nnf_var_libres p in
+  Alcotest.check varnom_set "" exp res
+
+let suite_nnf_var_libres =
+  [ "Vide", `Quick, testez_nnf_var_libres vide (ou_nnf [lit_nnf vrai; ou_nnf [lit_nnf faux; lit_nnf vrai]])
+  ; "Un", `Quick, testez_nnf_var_libres (set_of_list ["A"]) (ou_nnf [lit_nnf vrai; ou_nnf [pas_var_nnf "A"; lit_nnf vrai]])
+  ; "Deux", `Quick, testez_nnf_var_libres (set_of_list ["A";"B"]) (ou_nnf [var_nnf "A"; ou_nnf [pas_var_nnf "B"; var_nnf "B"]])
+  ]
+
 (* Evaluez NNF *)
 
 let testez_evaluation_nnf (exp : verite) (don_i : interpretation) (don_p : proposition_nnf) () =
@@ -102,6 +129,18 @@ let suite_evaluation_nnf =
 
 (* TODO *)
 
+(* DNF variables libres *)
+
+let testez_dnf_var_libres (exp : varnom set) (p : proposition_dnf) () =
+  let res = dnf_var_libres p in
+  Alcotest.check varnom_set "" exp res
+
+let suite_dnf_var_libres =
+  [ "Vide", `Quick, testez_dnf_var_libres vide (dnf [[lit_neg_atome vrai]; [lit_neg_atome faux; lit_neg_atome vrai]])
+  ; "Un", `Quick, testez_dnf_var_libres (set_of_list ["A"]) (dnf [[var_neg_atome "A"]; [lit_neg_atome faux; lit_neg_atome vrai]])
+  ; "Deux", `Quick, testez_dnf_var_libres (set_of_list ["A";"B"]) (dnf [[lit_neg_atome vrai]; [pas_var_neg_atome "A"; pas_var_neg_atome "B"]])
+  ]
+
 (* Evaluez DNF *)
 
 let testez_evaluation_dnf (exp : verite) (don_i : interpretation) (don_p : proposition_dnf) () =
@@ -113,14 +152,14 @@ let appliquez_don_dnf (nom : string) (p : proposition_dnf) =
 
 (* A + (B . C) + f *)
 let suite_evaluation_dnf_0 = appliquez_don_dnf "A+(B.C)+f" (dnf [[var_neg_atome "A"]; [var_neg_atome "B"; var_neg_atome "C"]; [lit_neg_atome faux]])
-[ testez_evaluation_dnf faux ["A", faux; "B", faux; "C", faux], "000"
-; testez_evaluation_dnf faux ["A", faux; "B", faux; "C", vrai], "001"
-; testez_evaluation_dnf faux ["A", faux; "B", vrai; "C", faux], "010"
-; testez_evaluation_dnf vrai ["A", faux; "B", vrai; "C", vrai], "011"
-; testez_evaluation_dnf vrai ["A", vrai; "B", faux; "C", faux], "100"
-; testez_evaluation_dnf vrai ["A", vrai; "B", faux; "C", vrai], "101"
-; testez_evaluation_dnf vrai ["A", vrai; "B", vrai; "C", faux], "110"
-; testez_evaluation_dnf vrai ["A", vrai; "B", vrai; "C", vrai], "111"
+  [ testez_evaluation_dnf faux ["A", faux; "B", faux; "C", faux], "000"
+  ; testez_evaluation_dnf faux ["A", faux; "B", faux; "C", vrai], "001"
+  ; testez_evaluation_dnf faux ["A", faux; "B", vrai; "C", faux], "010"
+  ; testez_evaluation_dnf vrai ["A", faux; "B", vrai; "C", vrai], "011"
+  ; testez_evaluation_dnf vrai ["A", vrai; "B", faux; "C", faux], "100"
+  ; testez_evaluation_dnf vrai ["A", vrai; "B", faux; "C", vrai], "101"
+  ; testez_evaluation_dnf vrai ["A", vrai; "B", vrai; "C", faux], "110"
+  ; testez_evaluation_dnf vrai ["A", vrai; "B", vrai; "C", vrai], "111"
   ]
 
 (* A + (B . f) + (C . ¬D) *)
@@ -153,7 +192,10 @@ let () =
   let open Alcotest in
   run "Propositions"
   [ "Sante", suite_sante
+  ; "Proposition Variables Libres", suite_prop_var_libres
   ; "Evaluation", suite_evaluation
+  ; "NNF Variables Libres", suite_nnf_var_libres
   ; "Evaluation NNF", suite_evaluation_nnf
+  ; "DNF Variables Libres", suite_dnf_var_libres
   ; "Evaluation DNF", suite_evaluation_dnf
   ]
