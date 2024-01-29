@@ -1,7 +1,7 @@
 open LogicAndProof.Sets
 open LogicAndProof.Pasvide
 open LogicAndProof.Propositions
-open LogicAndProof.PropositionsAbr
+open LogicAndProof.Propositions_abr
 
 let varnom_set : ('a set) Alcotest.testable = Alcotest.testable formateur_string_set pareil
 
