@@ -20,6 +20,25 @@ type proposition =
   | Impl of proposition * proposition
   | BiImpl of proposition * proposition
 
+let proposition_gen : proposition QCheck.Gen.t = QCheck.Gen.(sized @@ fix
+( fun self n -> if n < 0 then failwith "n ne peut pas etre negatif" else match n with
+  | 0 -> map (fun x -> Atome x) atome_gen
+  | n' ->
+    let n = min n' 10 in (* Sinon ca serait trop grand *)
+    let m = min ((QCheck.Gen.generate1 (int_bound 5)) + 1) n in
+    frequency
+    [ 1, map (fun x -> Atome x) atome_gen
+    ; 3, map (fun xs -> Ou xs) ((Pasvide.pas_vide_gen_n m) (self (n-m)))
+    ; 3, map (fun xs -> Et xs) ((Pasvide.pas_vide_gen_n m) (self (n-m)))
+    ; 2, map (fun x -> Pas x) (self (n-1))
+    ; 3, map2 (fun x y -> Impl (x, y)) (self (n/2)) (self (n/2))
+    ; 3, map2 (fun x y -> BiImpl (x, y)) (self (n/2)) (self (n/2))
+    ]
+))
+
+let proposition_arbitraire : proposition QCheck.arbitrary =
+  QCheck.make proposition_gen
+
 type interpretation = (varnom * verite) list
 
 let rec interpretation_cherche (nom : varnom) (i : interpretation) : verite option = match i with

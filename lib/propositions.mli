@@ -24,6 +24,10 @@ type proposition =
   | BiImpl of proposition * proposition
 (** Une proposition logique *)
 
+val proposition_gen : proposition QCheck.Gen.t
+
+val proposition_arbitraire : proposition QCheck.arbitrary
+
 type interpretation = (varnom * verite) list
 (** Un "mapping" de noms des variables a la valeur booleene *)
 

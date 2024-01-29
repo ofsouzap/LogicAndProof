@@ -80,9 +80,20 @@ let suite_propositions_equivalents =
   ; "", `Quick, testez_propositions_equivalents vrai (et_prop [Impl ((var_prop "P"), (var_prop "Q")); Impl ((var_prop "Q"), (var_prop "P"))]) (BiImpl ((var_prop "P"), (var_prop "Q")))
   ]
 
-(* Simple au NNF *)
+(* Proposition Brute au NNF *)
 
-(* TODO *)
+let testez_prop_au_nnf =
+  QCheck.Test.make ~count:1000
+  proposition_arbitraire
+  ( fun (prop : proposition) ->
+    let simple = prop_au_simple prop in
+    let nnf = simple_au_nnf simple in
+    let vars = prop_var_libres prop in
+    propositions_equivalents vars evaluez evaluez_nnf prop nnf )
+
+let suite_prop_au_nnf = List.map QCheck_alcotest.to_alcotest
+  [ testez_prop_au_nnf
+  ]
 
 (* NNF variables libres *)
 
@@ -216,6 +227,7 @@ let () =
   [ "Sante", suite_sante
   ; "Proposition Variables Libres", suite_prop_var_libres
   ; "Evaluation", suite_evaluation
+  ; "Proposition au NNF", suite_prop_au_nnf
   ; "Propositions Equivalents", suite_propositions_equivalents
   ; "NNF Variables Libres", suite_nnf_var_libres
   ; "Evaluation NNF", suite_evaluation_nnf
