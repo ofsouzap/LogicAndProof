@@ -15,7 +15,11 @@ val apposez : 'a -> 'a pas_vide -> 'a pas_vide
 val ajoutez : 'a -> 'a pas_vide -> 'a pas_vide
 (** Ajoutez une valeur au debut d'un pas-vide *)
 
-val pas_vide_arbitraire : 'a QCheck.Gen.t -> 'a pas_vide QCheck.Gen.t
+val pas_vide_gen_n : int -> 'a QCheck.Gen.t -> 'a pas_vide QCheck.Gen.t
+
+val pas_vide_gen : 'a QCheck.Gen.t -> 'a pas_vide QCheck.Gen.t
+
+val pas_vide_arbitraire : 'a QCheck.Gen.t -> ('a -> string) -> 'a pas_vide QCheck.arbitrary
 
 val enchainez : 'a pas_vide -> 'a pas_vide -> 'a pas_vide
 (** Enchainez deux pas-vides *)

@@ -8,7 +8,14 @@ let paire (a : 'a) (b : 'a) : 'a pas_vide = Cons (a, Feui b)
 
 let ajoutez (x : 'a ) (xs : 'a pas_vide) : 'a pas_vide = Cons (x, xs)
 
-let pas_vide_arbitraire (arb : 'a QCheck.Gen.t) : 'a pas_vide QCheck.Gen.t = QCheck.Gen.(sized @@ fix
+let pas_vide_gen_n (n : int) (arb : 'a QCheck.Gen.t) : 'a pas_vide QCheck.Gen.t = if n < 0 then failwith "n ne peut pas etre negatif" else
+  QCheck.Gen.(fix
+  ( fun self n -> match n with
+    | 0 | 1 -> map (fun x -> Feui x) arb
+    | n -> map2 (fun h ts -> Cons (h,ts)) arb (self (n-1))
+  ) n)
+
+let pas_vide_gen (arb : 'a QCheck.Gen.t) : 'a pas_vide QCheck.Gen.t = QCheck.Gen.(sized @@ fix
   ( fun self n -> match n with
     | 0 -> map (fun x -> Feui x) arb
     | n -> frequency
@@ -16,6 +23,13 @@ let pas_vide_arbitraire (arb : 'a QCheck.Gen.t) : 'a pas_vide QCheck.Gen.t = QCh
       ; 2, map2 (fun h ts -> Cons (h,ts)) arb (self (n-1))
       ]
   ))
+
+let pas_vide_arbitraire (arb: 'a QCheck.Gen.t) (string_of : 'a -> string) : 'a pas_vide QCheck.arbitrary =
+  let rec print_pas_vide = function
+    | Feui x -> string_of x
+    | Cons (h,ts) -> string_of h ^ "," ^ print_pas_vide ts
+  in
+  QCheck.make (pas_vide_gen arb) ~print:print_pas_vide
 
 let rec apposez (x : 'a) (xs : 'a pas_vide) : 'a pas_vide = match xs with
   | Cons (h, ts) -> Cons (h, apposez x ts)

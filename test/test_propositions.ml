@@ -139,7 +139,17 @@ let suite_evaluation_nnf =
 
 (* NNF au DNF *)
 
-(* TODO *)
+let testez_nnf_au_dnf =
+  QCheck.Test.make ~count:1000
+  nnf_arbitraire
+  ( fun (nnf : proposition_nnf) ->
+    let dnf = nnf_au_dnf nnf in
+    let vars = nnf_var_libres nnf in
+    propositions_equivalents vars evaluez_nnf evaluez_dnf nnf dnf )
+
+let suite_nnf_au_dnf = List.map QCheck_alcotest.to_alcotest
+  [ testez_nnf_au_dnf
+  ]
 
 (* DNF variables libres *)
 
@@ -209,6 +219,7 @@ let () =
   ; "Propositions Equivalents", suite_propositions_equivalents
   ; "NNF Variables Libres", suite_nnf_var_libres
   ; "Evaluation NNF", suite_evaluation_nnf
+  ; "NNF au DNF", suite_nnf_au_dnf
   ; "DNF Variables Libres", suite_dnf_var_libres
   ; "Evaluation DNF", suite_evaluation_dnf
   ]
