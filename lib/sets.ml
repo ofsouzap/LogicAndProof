@@ -28,9 +28,7 @@ let rec membre x = function
     then true
     else membre x ts
 
-let rec union xs = function
-  | [] -> xs
-  | h::ts -> union (ajoutez h xs) ts
+let compte = List.length
 
 let intersection xs =
   let rec aux acc = function
@@ -41,10 +39,9 @@ let intersection xs =
   in
   aux vide
 
-let list_of_set (xs : 'a set) : 'a list = xs
-
-let set_of_list (xs : 'a list) : 'a set =
-  List.fold_left (fun acc x -> ajoutez x acc) vide xs
+let rec union xs = function
+  | [] -> xs
+  | h::ts -> union (ajoutez h xs) ts
 
 let rec pareil (xs : 'a list) (ys : 'a list) : bool =
   let rec essaiez_enlever (x : 'a) (acc : 'a list) = function
@@ -61,3 +58,28 @@ let rec pareil (xs : 'a list) (ys : 'a list) : bool =
     | (xh::xts), ys -> ( match essaiez_enlever xh [] ys with
       | None -> false
       | Some ys' -> pareil xts ys' )
+
+let list_of_set (xs : 'a set) : 'a list = xs
+
+let set_of_list (xs : 'a list) : 'a set =
+  List.fold_left (fun acc x -> ajoutez x acc) vide xs
+
+let list_take_rev n xs =
+  let rec aux acc n xs = if n < 0 then failwith "Nombre d'elements negatif" else
+    match (n, xs) with
+      | (_, []) -> acc
+      | (n, h::ts) -> aux (h::acc) n ts
+  in
+  aux [] n xs
+
+let set_gen gen = QCheck.Gen.map set_of_list QCheck.Gen.(list gen)
+
+let set_gen_max n gen = QCheck.Gen.map set_of_list (QCheck.Gen.map (list_take_rev n) (QCheck.Gen.(list gen)))
+
+let set_arbitraire_print arb = match QCheck.get_print arb with
+  | None -> fun _ -> ""
+  | Some p -> QCheck.Print.list p
+
+let set_arbitraire arb = QCheck.make (set_gen (QCheck.gen arb)) ~print:(set_arbitraire_print arb)
+
+let set_arbitraire_max n arb = QCheck.make (set_gen_max n (QCheck.gen arb)) ~print:(set_arbitraire_print arb)
