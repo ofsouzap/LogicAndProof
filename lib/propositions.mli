@@ -1,3 +1,5 @@
+(* Les trucs pour la logique propositionnel *)
+
 type verite = bool
 (** Une valeur booleene *)
 

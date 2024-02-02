@@ -1,3 +1,5 @@
+(* Les lists qui ne sont pas vide *)
+
 type 'a pas_vide =
   | Cons of 'a * 'a pas_vide
   | Feui of 'a
