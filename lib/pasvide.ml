@@ -8,29 +8,6 @@ let paire (a : 'a) (b : 'a) : 'a pas_vide = Cons (a, Feui b)
 
 let ajoutez (x : 'a ) (xs : 'a pas_vide) : 'a pas_vide = Cons (x, xs)
 
-let pas_vide_gen_n (n : int) (arb : 'a QCheck.Gen.t) : 'a pas_vide QCheck.Gen.t = if n < 0 then failwith "n ne peut pas etre negatif" else
-  QCheck.Gen.(fix
-  ( fun self n -> match n with
-    | 0 | 1 -> map (fun x -> Feui x) arb
-    | n -> map2 (fun h ts -> Cons (h,ts)) arb (self (n-1))
-  ) n)
-
-let pas_vide_gen (arb : 'a QCheck.Gen.t) : 'a pas_vide QCheck.Gen.t = QCheck.Gen.(sized @@ fix
-  ( fun self n -> match n with
-    | 0 -> map (fun x -> Feui x) arb
-    | n -> frequency
-      [ 1, map (fun x -> Feui x) arb
-      ; 2, map2 (fun h ts -> Cons (h,ts)) arb (self (n-1))
-      ]
-  ))
-
-let pas_vide_arbitraire (arb: 'a QCheck.Gen.t) (string_of : 'a -> string) : 'a pas_vide QCheck.arbitrary =
-  let rec print_pas_vide = function
-    | Feui x -> string_of x
-    | Cons (h,ts) -> string_of h ^ "," ^ print_pas_vide ts
-  in
-  QCheck.make (pas_vide_gen arb) ~print:print_pas_vide
-
 let rec apposez (x : 'a) (xs : 'a pas_vide) : 'a pas_vide = match xs with
   | Cons (h, ts) -> Cons (h, apposez x ts)
   | Feui h -> Cons (h, Feui (x))
@@ -129,3 +106,19 @@ let prod_cartesian (xs : 'a pas_vide) (ys : 'b pas_vide) : ('a * 'b) pas_vide =
     | (Feui x, Cons (yh,yts)) -> aux_sub x (Feui (x, yh)) yts
     | (Cons (xh,xts), (Feui y as ys)) -> aux_principle (Feui (xh,y)) ys xts
     | (Cons (xh,xts), (Cons (yh,yts) as ys)) -> aux_principle (aux_sub xh (Feui (xh,yh)) yts) ys xts
+
+let pas_vide_arbitraire_print arb = match QCheck.get_print arb with
+  | None -> fun _ -> ""
+  | Some p -> fun xs -> (QCheck.Print.list p) (list_of_pas_vide xs)
+
+let pas_vide_arbitraire arb = QCheck.make
+  ~print:(pas_vide_arbitraire_print arb)
+  QCheck.Gen.( map
+    ( fun (h,ts) -> pas_vide_of_list (h::ts) )
+    ( pair (QCheck.gen arb) (list (QCheck.gen arb)) ) )
+
+let pas_vide_arbitraire_n n arb = QCheck.make
+  ~print:(pas_vide_arbitraire_print arb)
+  QCheck.Gen.( map
+    ( fun (h,ts) -> pas_vide_of_list (h :: (Utils.prennez_rev (n-1) ts)) )
+    ( pair (QCheck.gen arb) (list (QCheck.gen arb)) ) )

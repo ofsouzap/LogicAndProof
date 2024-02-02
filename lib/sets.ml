@@ -64,17 +64,9 @@ let list_of_set (xs : 'a set) : 'a list = xs
 let set_of_list (xs : 'a list) : 'a set =
   List.fold_left (fun acc x -> ajoutez x acc) vide xs
 
-let list_take_rev n xs =
-  let rec aux acc n xs = if n < 0 then failwith "Nombre d'elements negatif" else
-    match (n, xs) with
-      | (_, []) -> acc
-      | (n, h::ts) -> aux (h::acc) n ts
-  in
-  aux [] n xs
-
 let set_gen gen = QCheck.Gen.map set_of_list QCheck.Gen.(list gen)
 
-let set_gen_max n gen = QCheck.Gen.map set_of_list (QCheck.Gen.map (list_take_rev n) (QCheck.Gen.(list gen)))
+let set_gen_max n gen = QCheck.Gen.map set_of_list (QCheck.Gen.map (Utils.prennez_rev n) (QCheck.Gen.(list gen)))
 
 let set_arbitraire_print arb = match QCheck.get_print arb with
   | None -> fun _ -> ""
