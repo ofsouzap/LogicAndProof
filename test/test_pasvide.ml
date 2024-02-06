@@ -188,8 +188,6 @@ let suite_prod_cartesian =
 
 (* Main *)
 
-(* TODO - testes avec QCheck *)
-
 let () =
   let open Alcotest in
   run "Pas-Vide"
