@@ -7,10 +7,14 @@ type atome =
   | Lit of verite
   | Var of varnom
 
-let atome_gen : atome QCheck.Gen.t = QCheck.Gen.(frequency
+let atome_print = function
+  | Lit b -> "Lit " ^ string_of_bool b
+  | Var nom -> "Var " ^ nom
+
+let atome_arbitraire : atome QCheck.arbitrary = QCheck.make ~print:atome_print (QCheck.Gen.(frequency
   [ 1, map (fun x -> Lit x) bool
   ; 2, map (fun x -> Var x) string_printable
-  ])
+  ]))
 
 type proposition =
   | Atome of atome
@@ -21,20 +25,20 @@ type proposition =
   | BiImpl of proposition * proposition
 
 let proposition_gen : proposition QCheck.Gen.t = QCheck.Gen.(sized @@ fix
-( fun self n -> if n < 0 then failwith "n ne peut pas etre negatif" else match n with
-  | 0 -> map (fun x -> Atome x) atome_gen
-  | n' ->
-    let n = min n' 10 in (* Sinon ca serait trop grand *)
-    let m = min ((QCheck.Gen.generate1 (int_bound 5)) + 1) n in
-    frequency
-    [ 1, map (fun x -> Atome x) atome_gen
-    ; 3, map (fun xs -> Ou xs) ((Pasvide.pas_vide_gen_n m) (self (n-m)))
-    ; 3, map (fun xs -> Et xs) ((Pasvide.pas_vide_gen_n m) (self (n-m)))
-    ; 2, map (fun x -> Pas x) (self (n-1))
-    ; 3, map2 (fun x y -> Impl (x, y)) (self (n/2)) (self (n/2))
-    ; 3, map2 (fun x y -> BiImpl (x, y)) (self (n/2)) (self (n/2))
-    ]
-))
+  ( fun self n -> if n < 0 then failwith "n ne peut pas etre negatif" else
+    if n < 1 then map (fun x -> Atome x) (QCheck.gen atome_arbitraire)
+    else
+      let n' = min n 10 in (* Sinon ca serait trop grand *)
+      let m = min ((QCheck.Gen.generate1 (int_bound 5)) + 1) n' in
+      frequency
+      [ 1, map (fun x -> Atome x) (QCheck.gen atome_arbitraire)
+      ; 3, map (fun xs -> Ou xs) (QCheck.gen (Pasvide.pas_vide_arbitraire_n m (QCheck.make (self (n'/m)))))
+      ; 3, map (fun xs -> Et xs) (QCheck.gen (Pasvide.pas_vide_arbitraire_n m (QCheck.make (self (n'/m)))))
+      ; 2, map (fun x -> Pas x) (self (n'-1))
+      ; 3, map2 (fun x y -> Impl (x, y)) (self (n'/2)) (self (n'/2))
+      ; 3, map2 (fun x y -> BiImpl (x, y)) (self (n'/2)) (self (n'/2))
+      ]
+  ))
 
 let proposition_arbitraire : proposition QCheck.arbitrary =
   QCheck.make proposition_gen
@@ -121,10 +125,14 @@ type neg_atome =
   | Atome of atome
   | PasAtome of atome
 
-let neg_atome_gen : neg_atome QCheck.Gen.t = QCheck.Gen.(frequency
-  [ 1, map (fun x -> Atome x) atome_gen
-  ; 1, map (fun x -> PasAtome x) atome_gen
-  ])
+let neg_atome_print = function
+  | Atome x -> "Atome " ^ atome_print x
+  | PasAtome x -> "PasAtome " ^ atome_print x
+
+let neg_atome_arbitraire : neg_atome QCheck.arbitrary = QCheck.make ~print:neg_atome_print (QCheck.Gen.(frequency
+  [ 1, map (fun x -> Atome x) (QCheck.gen atome_arbitraire)
+  ; 1, map (fun x -> PasAtome x) (QCheck.gen atome_arbitraire)
+  ]))
 
 type proposition_nnf =
   | Atome of neg_atome
@@ -132,15 +140,15 @@ type proposition_nnf =
   | Et of proposition_nnf Pasvide.pas_vide
 
 let nnf_gen : proposition_nnf QCheck.Gen.t = QCheck.Gen.(sized @@ fix
-  ( fun self n -> if n < 0 then failwith "n ne peut pas etre negatif" else match n with
-    | 0 -> map (fun x -> Atome x) neg_atome_gen
-    | n' ->
-      let n = min n' 10 in (* Sinon ca serait trop grand *)
-      let m = min ((QCheck.Gen.generate1 (int_bound 5)) + 1) n in
+  ( fun self n -> if n < 0 then failwith "n ne peut pas etre negatif" else
+    if n < 2 then map (fun x -> Atome x) (QCheck.gen neg_atome_arbitraire)
+    else
+      let n' = min n 10 in (* Sinon ca serait trop grand *)
+      let m = min ((QCheck.Gen.generate1 (int_bound 5)) + 1) n' in
       frequency
-      [ 2, map (fun x -> Atome x) neg_atome_gen
-      ; 3, map (fun xs -> Ou xs) ((Pasvide.pas_vide_gen_n m) (self (n-m)))
-      ; 3, map (fun xs -> Et xs) ((Pasvide.pas_vide_gen_n m) (self (n-m)))
+      [ 2, map (fun x -> Atome x) (QCheck.gen neg_atome_arbitraire)
+      ; 3, map (fun xs -> Ou xs) (QCheck.gen (Pasvide.pas_vide_arbitraire_n m (QCheck.make (self (n'/m)))))
+      ; 3, map (fun xs -> Et xs) (QCheck.gen (Pasvide.pas_vide_arbitraire_n m (QCheck.make (self (n'/m)))))
       ]
   ))
 
@@ -184,12 +192,9 @@ type terme_dnf = neg_atome Pasvide.pas_vide
 
 type proposition_dnf = terme_dnf Pasvide.pas_vide
 
-let terme_dnf_gen = Pasvide.pas_vide_gen neg_atome_gen
+let terme_dnf_arbitraire = Pasvide.pas_vide_arbitraire neg_atome_arbitraire
 
-let dnf_gen = Pasvide.pas_vide_gen terme_dnf_gen
-
-let dnf_arbitraire : proposition_dnf QCheck.arbitrary =
-  QCheck.make dnf_gen
+let dnf_arbitraire = Pasvide.pas_vide_arbitraire terme_dnf_arbitraire
 
 let fussionnez_deux_dnf (x : proposition_dnf) (y : proposition_dnf) : proposition_dnf =
   let zs = Pasvide.prod_cartesian x y in
