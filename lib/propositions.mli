@@ -58,8 +58,9 @@ val evaluez : interpretation -> proposition -> verite
 (** Evaluez une proposition avec une interpretation *)
 
 type neg_atome =
-  | Atome of atome
-  | PasAtome of atome
+  | AtomeLit of verite
+  | AtomeVar of varnom
+  | PasAtomeVar of varnom
 (** Un atome qui peut etre negatif *)
 
 type proposition_nnf =

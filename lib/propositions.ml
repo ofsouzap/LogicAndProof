@@ -1,6 +1,7 @@
 type verite = bool
 let vrai : verite = true
 let faux : verite = false
+let pas = not
 
 type varnom = string
 type atome =
@@ -120,18 +121,20 @@ let evaluez (i : interpretation) (p : proposition) : verite =
   let p' = prop_au_simple p in
   evaluez_simple i p'
 
-(* TODO - ne liassez pas les neg-atome etre une literale pas-atome *)
 type neg_atome =
-  | Atome of atome
-  | PasAtome of atome
+  | AtomeLit of verite
+  | AtomeVar of varnom
+  | PasAtomeVar of varnom
 
 let neg_atome_print = function
-  | Atome x -> "Atome " ^ atome_print x
-  | PasAtome x -> "PasAtome " ^ atome_print x
+  | AtomeLit b -> "AtomeLit " ^ string_of_bool b
+  | AtomeVar nom -> "AtomeVar " ^ nom
+  | PasAtomeVar nom -> "PasAtomeVar " ^ nom
 
 let neg_atome_arbitraire : neg_atome QCheck.arbitrary = QCheck.make ~print:neg_atome_print (QCheck.Gen.(frequency
-  [ 1, map (fun x -> Atome x) (QCheck.gen atome_arbitraire)
-  ; 1, map (fun x -> PasAtome x) (QCheck.gen atome_arbitraire)
+  [ 1, map (fun x -> AtomeLit x) QCheck.Gen.bool
+  ; 1, map (fun x -> AtomeVar x) QCheck.Gen.string_printable
+  ; 1, map (fun x -> PasAtomeVar x) QCheck.Gen.string_printable
   ]))
 
 type proposition_nnf =
@@ -156,7 +159,8 @@ let nnf_arbitraire : proposition_nnf QCheck.arbitrary =
   QCheck.make nnf_gen
 
 let rec simple_au_nnf (p : proposition_simple) : proposition_nnf = match p with
-  | Atome a -> Atome (Atome a)
+  | Atome (Lit b) -> Atome (AtomeLit b)
+  | Atome (Var nom) -> Atome (PasAtomeVar nom)
   | Ou xs -> Ou (Pasvide.map simple_au_nnf xs)
   | Et xs -> Et (Pasvide.map simple_au_nnf xs)
   | Pas (Ou xs) ->
@@ -165,19 +169,20 @@ let rec simple_au_nnf (p : proposition_simple) : proposition_nnf = match p with
   | Pas (Et xs) ->
     let mapf x : proposition_nnf = simple_au_nnf (Pas x) in
     Ou (Pasvide.map mapf xs)
-  | Pas (Atome a) -> Atome (PasAtome a)
+  | Pas (Atome (Lit b)) -> Atome (AtomeLit (pas b))
+  | Pas (Atome (Var nom)) -> Atome (PasAtomeVar nom)
   | Pas (Pas x) -> simple_au_nnf x
 
 let evaluez_neg_atome (i : interpretation) (a : neg_atome) : verite = match a with
-  | Atome a -> evaluez_atome i a
-  | PasAtome a -> not (evaluez_atome i a)
+  | AtomeLit b -> b
+  | AtomeVar nom -> ( match interpretation_cherche nom i with | None -> false | Some b -> b )
+  | PasAtomeVar nom -> pas ( match interpretation_cherche nom i with | None -> false | Some b -> b )
 
 let nnf_var_libres (p : proposition_nnf) : varnom Sets.set =
   let rec aux acc = function
-    | Atome (Atome (Lit _)) -> acc
-    | Atome (PasAtome (Lit _)) -> acc
-    | Atome (Atome (Var n)) -> Sets.ajoutez n acc
-    | Atome (PasAtome (Var n)) -> Sets.ajoutez n acc
+    | Atome (AtomeLit _) -> acc
+    | Atome (AtomeVar nom) -> Sets.ajoutez nom acc
+    | Atome (PasAtomeVar nom) -> Sets.ajoutez nom acc
     | Ou xs -> Pasvide.foldl aux acc xs
     | Et xs -> Pasvide.foldl aux acc xs
   in
@@ -221,10 +226,9 @@ let rec nnf_au_dnf (p : proposition_nnf) : proposition_dnf = match p with
 
 let dnf_var_libres (p : proposition_dnf) : varnom Sets.set =
   let aux (acc : varnom Sets.set) (a : neg_atome) : varnom Sets.set = match a with
-    | Atome (Lit _) -> acc
-    | PasAtome (Lit _) -> acc
-    | Atome (Var n) -> Sets.ajoutez n acc
-    | PasAtome (Var n) -> Sets.ajoutez n acc
+    | AtomeLit _ -> acc
+    | AtomeVar nom -> Sets.ajoutez nom acc
+    | PasAtomeVar nom -> Sets.ajoutez nom acc
   in
   Pasvide.foldl (Pasvide.foldl aux) Sets.vide p
 
