@@ -92,6 +92,8 @@ let rec quelque (f : 'a -> bool) (xs : 'a pas_vide) : bool = match xs with
   | Feui x -> f x
   | Cons (h, ts) -> f h || quelque f ts
 
+let compte xs = foldl (fun acc _ -> succ acc) 0 xs
+
 let prod_cartesian (xs : 'a pas_vide) (ys : 'b pas_vide) : ('a * 'b) pas_vide =
   let rec aux_sub (x : 'a) (acc : ('a * 'b) pas_vide) = function
     | Feui y -> Cons ((x,y), acc)
@@ -117,8 +119,12 @@ let pas_vide_arbitraire arb = QCheck.make
     ( fun (h,ts) -> pas_vide_of_list (h::ts) )
     ( pair (QCheck.gen arb) (list (QCheck.gen arb)) ) )
 
+let pas_vide_gen_n n gen_ele = QCheck.Gen.(fix
+  ( fun self n ->
+    if n < 1 then map (fun x -> Feui x) gen_ele
+    else map (fun (h,ts) -> Cons (h,ts)) (pair gen_ele (self (n-1))) ))
+  n
+
 let pas_vide_arbitraire_n n arb = QCheck.make
   ~print:(pas_vide_arbitraire_print arb)
-  QCheck.Gen.( map
-    ( fun (h,ts) -> pas_vide_of_list (h :: (Utils.prennez_rev (n-1) ts)) )
-    ( pair (QCheck.gen arb) (list (QCheck.gen arb)) ) )
+  (pas_vide_gen_n n (QCheck.gen arb))
