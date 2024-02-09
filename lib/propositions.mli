@@ -28,6 +28,8 @@ type proposition =
 
 val proposition_arbitraire : proposition QCheck.arbitrary
 
+(* TODO - string of proposition *)
+
 type interpretation = (varnom * verite) list
 (** Un "mapping" de noms des variables a la valeur booleene *)
 
@@ -51,6 +53,8 @@ type proposition_simple =
   | Pas of proposition_simple
 (** Une proposition simple, sans implications *)
 
+(* TODO - string of proposition simple *)
+
 val prop_au_simple : proposition -> proposition_simple
 (** Mettez une proposition brute en proposition simple, sans implication *)
 
@@ -71,6 +75,8 @@ type proposition_nnf =
 
 val nnf_arbitraire : proposition_nnf QCheck.arbitrary
 
+(* TODO - string of proposition NNF *)
+
 val simple_au_nnf : proposition_simple -> proposition_nnf
 (** Mettez une proposition simple en forme NNF *)
 
@@ -87,6 +93,8 @@ type proposition_dnf = terme_dnf Pasvide.pas_vide
 (** Une proposition en DNF ("Disjunctive Normal Form"), comme "(A + B) . C . (D + E + F)" *)
 
 val dnf_arbitraire : proposition_dnf QCheck.arbitrary
+
+(* TODO - string of proposition DNF *)
 
 val nnf_au_dnf : proposition_nnf -> proposition_dnf
 (** Mettez une proposition en forme NNF en forme DNF *)
