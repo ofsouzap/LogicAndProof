@@ -25,3 +25,8 @@ let et_nnf (xs : proposition_nnf list) : proposition_nnf = Et (Pasvide.pas_vide_
 
 let dnf (xs : neg_atome list list) : proposition_dnf =
   Pasvide.pas_vide_of_list (List.map Pasvide.pas_vide_of_list xs)
+
+(* CNF *)
+
+let cnf (xs : neg_atome list list) : proposition_cnf =
+  Pasvide.pas_vide_of_list (List.map Pasvide.pas_vide_of_list xs)

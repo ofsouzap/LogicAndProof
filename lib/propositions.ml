@@ -223,6 +223,10 @@ type terme_dnf = neg_atome Pasvide.pas_vide
 
 type proposition_dnf = terme_dnf Pasvide.pas_vide
 
+type terme_cnf = neg_atome Pasvide.pas_vide
+
+type proposition_cnf = terme_dnf Pasvide.pas_vide
+
 let terme_dnf_arbitraire = Pasvide.pas_vide_arbitraire neg_atome_arbitraire
 
 let dnf_arbitraire = Pasvide.pas_vide_arbitraire terme_dnf_arbitraire
@@ -230,6 +234,14 @@ let dnf_arbitraire = Pasvide.pas_vide_arbitraire terme_dnf_arbitraire
 let string_of_terme_dnf atomes = "(" ^ (Pasvide.intercalez_avec ").(" (Pasvide.map string_of_neg_atome atomes)) ^ ")"
 
 let string_of_dnf es = "(" ^ (Pasvide.intercalez_avec ")+(" (Pasvide.map string_of_terme_dnf es)) ^ ")"
+
+let terme_cnf_arbitraire = Pasvide.pas_vide_arbitraire neg_atome_arbitraire
+
+let cnf_arbitraire = Pasvide.pas_vide_arbitraire terme_cnf_arbitraire
+
+let string_of_terme_cnf atomes = "(" ^ (Pasvide.intercalez_avec ")+(" (Pasvide.map string_of_neg_atome atomes)) ^ ")"
+
+let string_of_cnf es = "(" ^ (Pasvide.intercalez_avec ").(" (Pasvide.map string_of_terme_cnf es)) ^ ")"
 
 let fussionnez_cartesian_deux (x : 'a Pasvide.pas_vide) (y : 'a Pasvide.pas_vide) : 'a Pasvide.pas_vide =
   let zs = Pasvide.prod_cartesian x y in
@@ -261,5 +273,26 @@ let dnf_var_libres (p : proposition_dnf) : varnom Sets.set =
 let evaluez_terme_dnf (i : interpretation) = Pasvide.tous (evaluez_neg_atome i)
 
 let evaluez_dnf (i : interpretation) = Pasvide.quelque (evaluez_terme_dnf i)
+
+let rec nnf_au_cnf (p : proposition_nnf) : proposition_cnf = match p with
+  | Atome a -> Pasvide.singleton (Pasvide.singleton a)
+  | Ou xs ->
+    let xs' = Pasvide.map nnf_au_cnf xs in
+    fusionnez_cartesian_plusieurs xs'
+  | Et xs ->
+    let xs' = Pasvide.map nnf_au_cnf xs in
+    Pasvide.aplatissez xs'
+
+let cnf_var_libres (p : proposition_cnf) : varnom Sets.set =
+  let aux (acc : varnom Sets.set) (a : neg_atome) : varnom Sets.set = match a with
+    | AtomeLit _ -> acc
+    | AtomeVar nom -> Sets.ajoutez nom acc
+    | PasAtomeVar nom -> Sets.ajoutez nom acc
+  in
+  Pasvide.foldl (Pasvide.foldl aux) Sets.vide p
+
+let evaluez_terme_cnf (i : interpretation) = Pasvide.quelque (evaluez_neg_atome i)
+
+let evaluez_cnf (i : interpretation) = Pasvide.tous (evaluez_terme_cnf i)
 
 (** TODO - faisez le truc pour transformer les proposition en CNF *)

@@ -159,8 +159,7 @@ let testez_nnf_au_dnf =
     propositions_equivalents vars evaluez_nnf evaluez_dnf nnf dnf )
 
 let suite_nnf_au_dnf = List.map QCheck_alcotest.to_alcotest
-  [ testez_nnf_au_dnf
-  ]
+  [ testez_nnf_au_dnf ]
 
 (* DNF variables libres *)
 
@@ -196,7 +195,7 @@ let suite_evaluation_dnf_0 = appliquez_don_dnf "A+(B.C)+f" (dnf [[var_neg_atome 
   ]
 
 (* A + (B . f) + (C . ¬D) *)
-let suite_evaluation_dnf_1 = appliquez_don_dnf "A+(B.f)+(C+¬D)" (dnf [[var_neg_atome "A"]; [var_neg_atome "B"; lit_neg_atome faux]; [var_neg_atome "C"; pas_var_neg_atome "D"]])
+let suite_evaluation_dnf_1 = appliquez_don_dnf "A+(B.f)+(C.¬D)" (dnf [[var_neg_atome "A"]; [var_neg_atome "B"; lit_neg_atome faux]; [var_neg_atome "C"; pas_var_neg_atome "D"]])
   [ testez_evaluation_dnf faux ["A", faux; "B", faux; "C", faux; "D", faux], "0000"
   ; testez_evaluation_dnf faux ["A", faux; "B", faux; "C", faux; "D", vrai], "0001"
   ; testez_evaluation_dnf vrai ["A", faux; "B", faux; "C", vrai; "D", faux], "0010"
@@ -219,6 +218,76 @@ let suite_evaluation_dnf =
     suite_evaluation_dnf_0
   @ suite_evaluation_dnf_1
 
+(* NNF au CNF *)
+
+let testez_nnf_au_cnf =
+  QCheck.Test.make ~count:1000
+  nnf_arbitraire
+  ( fun (nnf : proposition_nnf) ->
+    let cnf = nnf_au_cnf nnf in
+    let vars = nnf_var_libres nnf in
+    propositions_equivalents vars evaluez_nnf evaluez_cnf nnf cnf )
+
+let suite_nnf_au_cnf = List.map QCheck_alcotest.to_alcotest
+  [ testez_nnf_au_cnf ]
+
+(* CNF variables libres *)
+
+let testez_cnf_var_libres (exp : varnom set) (p : proposition_cnf) () =
+  let res = cnf_var_libres p in
+  Alcotest.check varnom_set "" exp res
+
+let suite_cnf_var_libres =
+  [ "Vide", `Quick, testez_cnf_var_libres vide (cnf [[lit_neg_atome vrai]; [lit_neg_atome faux; lit_neg_atome vrai]])
+  ; "Un", `Quick, testez_cnf_var_libres (set_of_list ["A"]) (cnf [[var_neg_atome "A"]; [lit_neg_atome faux; lit_neg_atome vrai]])
+  ; "Deux", `Quick, testez_cnf_var_libres (set_of_list ["A";"B"]) (cnf [[lit_neg_atome vrai]; [pas_var_neg_atome "A"; pas_var_neg_atome "B"]])
+  ]
+
+(* Evaluez CNF *)
+
+let testez_evaluation_cnf (exp : verite) (don_i : interpretation) (don_p : proposition_cnf) () =
+  let res = evaluez_cnf don_i don_p in
+  Alcotest.(check bool) "evaluation" exp res
+
+let appliquez_don_cnf (nom : string) (p : proposition_cnf) =
+  List.map (fun (f,s) -> nom ^ " - " ^ s, `Quick, f p)
+
+(* A . (B + C) . f *)
+let suite_evaluation_cnf_0 = appliquez_don_cnf "A.(B+C).f" (cnf [[var_neg_atome "A"]; [var_neg_atome "B"; var_neg_atome "C"]; [lit_neg_atome faux]])
+  [ testez_evaluation_cnf faux ["A", faux; "B", faux; "C", faux], "000"
+  ; testez_evaluation_cnf faux ["A", faux; "B", faux; "C", vrai], "001"
+  ; testez_evaluation_cnf faux ["A", faux; "B", vrai; "C", faux], "010"
+  ; testez_evaluation_cnf faux ["A", faux; "B", vrai; "C", vrai], "011"
+  ; testez_evaluation_cnf faux ["A", vrai; "B", faux; "C", faux], "100"
+  ; testez_evaluation_cnf faux ["A", vrai; "B", faux; "C", vrai], "101"
+  ; testez_evaluation_cnf faux ["A", vrai; "B", vrai; "C", faux], "110"
+  ; testez_evaluation_cnf faux ["A", vrai; "B", vrai; "C", vrai], "111"
+  ]
+
+(* A . (B + f) . (C + ¬D) *)
+let suite_evaluation_cnf_1 = appliquez_don_cnf "A.(B+f).(C+¬D)" (cnf [[var_neg_atome "A"]; [var_neg_atome "B"; lit_neg_atome faux]; [var_neg_atome "C"; pas_var_neg_atome "D"]])
+  [ testez_evaluation_cnf faux ["A", faux; "B", faux; "C", faux; "D", faux], "0000"
+  ; testez_evaluation_cnf faux ["A", faux; "B", faux; "C", faux; "D", vrai], "0001"
+  ; testez_evaluation_cnf faux ["A", faux; "B", faux; "C", vrai; "D", faux], "0010"
+  ; testez_evaluation_cnf faux ["A", faux; "B", faux; "C", vrai; "D", vrai], "0011"
+  ; testez_evaluation_cnf faux ["A", faux; "B", vrai; "C", faux; "D", faux], "0100"
+  ; testez_evaluation_cnf faux ["A", faux; "B", vrai; "C", faux; "D", vrai], "0101"
+  ; testez_evaluation_cnf faux ["A", faux; "B", vrai; "C", vrai; "D", faux], "0110"
+  ; testez_evaluation_cnf faux ["A", faux; "B", vrai; "C", vrai; "D", vrai], "0111"
+  ; testez_evaluation_cnf faux ["A", vrai; "B", faux; "C", faux; "D", faux], "1000"
+  ; testez_evaluation_cnf faux ["A", vrai; "B", faux; "C", faux; "D", vrai], "1001"
+  ; testez_evaluation_cnf faux ["A", vrai; "B", faux; "C", vrai; "D", faux], "1010"
+  ; testez_evaluation_cnf faux ["A", vrai; "B", faux; "C", vrai; "D", vrai], "1011"
+  ; testez_evaluation_cnf vrai ["A", vrai; "B", vrai; "C", faux; "D", faux], "1100"
+  ; testez_evaluation_cnf faux ["A", vrai; "B", vrai; "C", faux; "D", vrai], "1101"
+  ; testez_evaluation_cnf vrai ["A", vrai; "B", vrai; "C", vrai; "D", faux], "1110"
+  ; testez_evaluation_cnf vrai ["A", vrai; "B", vrai; "C", vrai; "D", vrai], "1111"
+  ]
+
+let suite_evaluation_cnf =
+    suite_evaluation_cnf_0
+  @ suite_evaluation_cnf_1
+
 (* Main *)
 
 let () =
@@ -234,4 +303,7 @@ let () =
   ; "NNF au DNF", suite_nnf_au_dnf
   ; "DNF Variables Libres", suite_dnf_var_libres
   ; "Evaluation DNF", suite_evaluation_dnf
+  ; "NNF au CNF", suite_nnf_au_cnf
+  ; "CNF Variables Libres", suite_cnf_var_libres
+  ; "Evaluation CNF", suite_evaluation_cnf
   ]

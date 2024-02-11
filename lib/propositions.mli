@@ -90,11 +90,21 @@ type terme_dnf = neg_atome Pasvide.pas_vide
 (** Une terme d'une proposition en DNF *)
 
 type proposition_dnf = terme_dnf Pasvide.pas_vide
-(** Une proposition en DNF ("Disjunctive Normal Form"), comme "(A + B) . C . (D + E + F)" *)
+(** Une proposition en DNF ("Disjunctive Normal Form"), comme "(A . B) + C + (D . E . F)" *)
 
 val dnf_arbitraire : proposition_dnf QCheck.arbitrary
 
 val string_of_dnf : proposition_dnf -> string
+
+type terme_cnf = neg_atome Pasvide.pas_vide
+(** Une terme d'une proposition en CNF *)
+
+type proposition_cnf = terme_cnf Pasvide.pas_vide
+(** Une proposition en CNF ("Conjunctive Normal Form"), comme "(A + B) . C . (D + E + F)" *)
+
+val cnf_arbitraire : proposition_cnf QCheck.arbitrary
+
+val string_of_cnf : proposition_cnf -> string
 
 val nnf_au_dnf : proposition_nnf -> proposition_dnf
 (** Mettez une proposition en forme NNF en forme DNF *)
@@ -104,3 +114,12 @@ val dnf_var_libres : proposition_dnf -> varnom Sets.set
 
 val evaluez_dnf : interpretation -> proposition_dnf -> verite
 (** Evaluez une proposition en forme DNF *)
+
+val nnf_au_cnf : proposition_nnf -> proposition_cnf
+(** Mettez une proposition en forme NNF en forme CNF *)
+
+val cnf_var_libres : proposition_cnf -> varnom Sets.set
+(** Trouve les noms des variables libres dans une proposition en forme CNF *)
+
+val evaluez_cnf : interpretation -> proposition_cnf -> verite
+(** Evaluez une proposition en forme CNF *)
