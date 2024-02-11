@@ -1,4 +1,4 @@
-(* Les trucs pour la logique propositionnel *)
+(** Les trucs pour la logique propositionnel *)
 
 type verite = bool
 (** Une valeur booleene *)
