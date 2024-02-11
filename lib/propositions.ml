@@ -53,6 +53,18 @@ let rec string_of_proposition = function
   | Impl (a,b) -> "(" ^ string_of_proposition a ^ ") => (" ^ string_of_proposition b ^ ")"
   | BiImpl (a,b) -> "(" ^ string_of_proposition a ^ ") <=> (" ^ string_of_proposition b ^ ")"
 
+let prop_var_libres (p : proposition) : varnom Sets.set =
+  let rec aux acc = function
+    | Atome (Lit _) -> acc
+    | Atome (Var n) -> Sets.ajoutez n acc
+    | Ou xs -> Pasvide.foldl aux acc xs
+    | Et xs -> Pasvide.foldl aux acc xs
+    | Pas x -> aux acc x
+    | Impl (a, b) -> aux (aux acc a) b
+    | BiImpl (a, b) -> aux (aux acc a) b
+  in
+  aux Sets.vide p
+
 type interpretation = (varnom * verite) list
 
 let rec interpretation_cherche (nom : varnom) (i : interpretation) : verite option = match i with
@@ -80,18 +92,6 @@ let propositions_equivalents vars eval1 eval2 p1 p2 =
   List.for_all
     (fun i -> eval1 i p1 = eval2 i p2)
     (interpretations_possibles (Sets.list_of_set vars))
-
-let prop_var_libres (p : proposition) : varnom Sets.set =
-  let rec aux acc = function
-    | Atome (Lit _) -> acc
-    | Atome (Var n) -> Sets.ajoutez n acc
-    | Ou xs -> Pasvide.foldl aux acc xs
-    | Et xs -> Pasvide.foldl aux acc xs
-    | Pas x -> aux acc x
-    | Impl (a, b) -> aux (aux acc a) b
-    | BiImpl (a, b) -> aux (aux acc a) b
-  in
-  aux Sets.vide p
 
 let evaluez_atome (i : interpretation) (a : atome) : verite = match a with
   | Lit b -> b

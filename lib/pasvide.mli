@@ -1,78 +1,78 @@
 (** Les lists qui ne sont pas vide *)
 
+(** Une liste qui n'est pas vide *)
 type 'a pas_vide =
   | Cons of 'a * 'a pas_vide
   | Feui of 'a
-(** Une liste qui n'est pas vide *)
 
-val singleton : 'a -> 'a pas_vide
 (** Cree un pas-vide avec une seule valeur *)
+val singleton : 'a -> 'a pas_vide
 
-val paire : 'a -> 'a -> 'a pas_vide
 (** Cree un pas-vide avec deux valeurs *)
+val paire : 'a -> 'a -> 'a pas_vide
 
-val apposez : 'a -> 'a pas_vide -> 'a pas_vide
 (** Apposez une valeur au fin d'un pas-vide *)
+val apposez : 'a -> 'a pas_vide -> 'a pas_vide
 
-val ajoutez : 'a -> 'a pas_vide -> 'a pas_vide
 (** Ajoutez une valeur au debut d'un pas-vide *)
+val ajoutez : 'a -> 'a pas_vide -> 'a pas_vide
 
+(** Enchainez deux pas-vides *)
 val enchainez : 'a pas_vide -> 'a pas_vide -> 'a pas_vide
-(** Enchainez deux pas-vides *)
 
+(** Enchainez deux pas-vides *)
 val (@:) : 'a pas_vide -> 'a pas_vide -> 'a pas_vide
-(** Enchainez deux pas-vides *)
 
-val intercalez_avec : string -> string pas_vide -> string
 (** Intercalez une pas-vide avec un string *)
+val intercalez_avec : string -> string pas_vide -> string
 
-val tete : 'a pas_vide -> 'a
 (** Prenez la premiere valeur d'un pas-vide *)
+val tete : 'a pas_vide -> 'a
 
-val tail : 'a pas_vide -> 'a pas_vide option
 (** Essayez de prendre le "tail" d'un pas-vide. Sinon on retourne None *)
+val tail : 'a pas_vide -> 'a pas_vide option
 
-val renverse : 'a pas_vide -> 'a pas_vide
 (** Renversez un pas-vide *)
+val renverse : 'a pas_vide -> 'a pas_vide
 
-val pas_vide_of_list : 'a list -> 'a pas_vide
 (** Construisez la pas-vide d'une liste. Si la liste est vide, cela echoue *)
+val pas_vide_of_list : 'a list -> 'a pas_vide
 
-val list_of_pas_vide : 'a pas_vide -> 'a list
 (** Construisez la liste d'un pas-vide *)
+val list_of_pas_vide : 'a pas_vide -> 'a list
 
+(** Faisez une operation "fold" sur un pas-vide *)
 val foldl : ('b -> 'a -> 'b) -> 'b -> 'a pas_vide -> 'b
-(** Faisez une operation "fold" sur un pas-vide *)
 
+(** Faisez une operation "fold" sur un pas-vide *)
 val foldr : ('a -> 'b -> 'b) -> 'b -> 'a pas_vide -> 'b
-(** Faisez une operation "fold" sur un pas-vide *)
 
-val aplatissez : 'a pas_vide pas_vide -> 'a pas_vide
 (** Aplatissez les pas-vides *)
+val aplatissez : 'a pas_vide pas_vide -> 'a pas_vide
 
-val map_rev : ('a -> 'b) -> 'a pas_vide -> 'b pas_vide
 (** Mappez un pas-vide avec une mappage. Le resultat est renverse *)
+val map_rev : ('a -> 'b) -> 'a pas_vide -> 'b pas_vide
 
-val map : ('a -> 'b) -> 'a pas_vide -> 'b pas_vide
 (** Mappez un pas-vide avec une mappage *)
+val map : ('a -> 'b) -> 'a pas_vide -> 'b pas_vide
 
-val zip_rev : 'a pas_vide -> 'b pas_vide -> ('a * 'b) pas_vide
 (** Fermez les deux pas-vides avex eux-memes. Le resultat est renverse *)
+val zip_rev : 'a pas_vide -> 'b pas_vide -> ('a * 'b) pas_vide
 
-val zip : 'a pas_vide -> 'b pas_vide -> ('a * 'b) pas_vide
 (** Fermez les deux pas-vides avex eux-memes *)
+val zip : 'a pas_vide -> 'b pas_vide -> ('a * 'b) pas_vide
 
-val tous : ('a -> bool) -> 'a pas_vide -> bool
 (** Verifiez si tous les elements dans un pas-vide satisfont un predicat *)
+val tous : ('a -> bool) -> 'a pas_vide -> bool
 
-val quelque : ('a -> bool) -> 'a pas_vide -> bool
 (** Verifiez si il y en a un element dans un pas-vide qui satisfait un predicat *)
+val quelque : ('a -> bool) -> 'a pas_vide -> bool
 
-val compte : 'a pas_vide -> int
 (** Le compte *)
+val compte : 'a pas_vide -> int
 
-val prod_cartesian : 'a pas_vide -> 'b pas_vide -> ('a * 'b) pas_vide
 (** Construisez tous les paires possibles. C'est un produit cartesian *)
+val prod_cartesian : 'a pas_vide -> 'b pas_vide -> ('a * 'b) pas_vide
 
 val pas_vide_arbitraire : 'a QCheck.arbitrary -> 'a pas_vide QCheck.arbitrary
 
