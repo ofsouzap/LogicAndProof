@@ -231,15 +231,15 @@ let string_of_terme_dnf atomes = "(" ^ (Pasvide.intercalez_avec ").(" (Pasvide.m
 
 let string_of_dnf es = "(" ^ (Pasvide.intercalez_avec ")+(" (Pasvide.map string_of_terme_dnf es)) ^ ")"
 
-let fussionnez_deux_dnf (x : 'a Pasvide.pas_vide) (y : 'a Pasvide.pas_vide) : 'a Pasvide.pas_vide =
+let fussionnez_cartesian_deux (x : 'a Pasvide.pas_vide) (y : 'a Pasvide.pas_vide) : 'a Pasvide.pas_vide =
   let zs = Pasvide.prod_cartesian x y in
   Pasvide.map_rev
     (fun (a,b) -> Pasvide.enchainez a b)
     zs
 
-let fusionnez_dnf (xs : 'a Pasvide.pas_vide Pasvide.pas_vide) : 'a Pasvide.pas_vide = match xs with
+let fusionnez_cartesian_plusieurs (xs : 'a Pasvide.pas_vide Pasvide.pas_vide) : 'a Pasvide.pas_vide = match xs with
   | Feui x -> x
-  | Cons (xh,xts) -> Pasvide.foldl fussionnez_deux_dnf xh xts
+  | Cons (xh,xts) -> Pasvide.foldl fussionnez_cartesian_deux xh xts
 
 let rec nnf_au_dnf (p : proposition_nnf) : proposition_dnf = match p with
   | Atome a -> Pasvide.singleton (Pasvide.singleton a)
@@ -248,7 +248,7 @@ let rec nnf_au_dnf (p : proposition_nnf) : proposition_dnf = match p with
     Pasvide.aplatissez xs'
   | Et xs ->
     let xs' = Pasvide.map nnf_au_dnf xs in
-    fusionnez_dnf xs'
+    fusionnez_cartesian_plusieurs xs'
 
 let dnf_var_libres (p : proposition_dnf) : varnom Sets.set =
   let aux (acc : varnom Sets.set) (a : neg_atome) : varnom Sets.set = match a with
