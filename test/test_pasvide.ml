@@ -61,11 +61,23 @@ let test_enchainez =
   ( fun (x1,x2) ->
     list_of_pas_vide (enchainez x1 x2) = list_of_pas_vide x1 @ list_of_pas_vide x2 )
 
+let test_aplatissez =
+  QCheck.Test.make ~count:1000 ~name:"Aplatissez"
+  QCheck.(pair (pas_vide_arbitraire int) (list_of_size (Gen.int_bound 10) (pas_vide_arbitraire int)))
+  ( fun (h,ts) ->
+    let xs = pas_vide_of_list (h::ts) in
+    let rec mon_aplatissez = function
+      | Feui x -> x
+      | Cons (h,ts) -> h @: mon_aplatissez ts
+    in
+    aplatissez xs = mon_aplatissez xs )
+
 let suite_constructions = List.map QCheck_alcotest.to_alcotest
   [ test_singleton
   ; test_ajoutez
   ; test_apposez
-  ; test_enchainez ]
+  ; test_enchainez
+  ; test_aplatissez ]
 
 let test_tete =
   QCheck.Test.make ~count:1000 ~name:"Tete"

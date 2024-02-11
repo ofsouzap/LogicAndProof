@@ -63,6 +63,10 @@ let rec foldr (f : 'a -> 'b -> 'b) (acc : 'b) (xs : 'a pas_vide) : 'b = match xs
   | Feui x -> f x acc
   | Cons (h,ts) -> f h (foldr f acc ts)
 
+let aplatissez (xs : 'a pas_vide pas_vide) : 'a pas_vide = match xs with
+  | Feui x -> x
+  | Cons (xh, xts) -> foldl enchainez xh xts
+
 let map_rev (f : 'a -> 'b) (xs : 'a pas_vide) : 'b pas_vide =
   let foldf (acc : 'b pas_vide) (x : 'a) : 'b pas_vide =
     ajoutez (f x) acc

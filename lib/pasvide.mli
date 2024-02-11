@@ -47,6 +47,9 @@ val foldl : ('b -> 'a -> 'b) -> 'b -> 'a pas_vide -> 'b
 val foldr : ('a -> 'b -> 'b) -> 'b -> 'a pas_vide -> 'b
 (** Faisez une operation "fold" sur un pas-vide *)
 
+val aplatissez : 'a pas_vide pas_vide -> 'a pas_vide
+(** Aplatissez les pas-vides *)
+
 val map_rev : ('a -> 'b) -> 'a pas_vide -> 'b pas_vide
 (** Mappez un pas-vide avec une mappage. Le resultat est renverse *)
 
