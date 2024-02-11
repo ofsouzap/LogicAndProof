@@ -23,6 +23,9 @@ val enchainez : 'a pas_vide -> 'a pas_vide -> 'a pas_vide
 val (@:) : 'a pas_vide -> 'a pas_vide -> 'a pas_vide
 (** Enchainez deux pas-vides *)
 
+val intercalez_avec : string -> string pas_vide -> string
+(** Intercalez une pas-vide avec un string *)
+
 val tete : 'a pas_vide -> 'a
 (** Prenez la premiere valeur d'un pas-vide *)
 

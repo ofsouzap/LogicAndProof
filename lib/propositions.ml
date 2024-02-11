@@ -44,6 +44,15 @@ let proposition_gen : proposition QCheck.Gen.t = QCheck.Gen.(sized @@ fix
 let proposition_arbitraire : proposition QCheck.arbitrary =
   QCheck.make proposition_gen
 
+let rec string_of_proposition = function
+  | Atome (Lit b) -> string_of_bool b
+  | Atome (Var nom) -> nom
+  | Ou es -> "(" ^ Pasvide.intercalez_avec ")+(" (Pasvide.map string_of_proposition es) ^ ")"
+  | Et es -> "(" ^ Pasvide.intercalez_avec ").(" (Pasvide.map string_of_proposition es) ^ ")"
+  | Pas e -> "¬(" ^ string_of_proposition e ^ ")"
+  | Impl (a,b) -> "(" ^ string_of_proposition a ^ ") => (" ^ string_of_proposition b ^ ")"
+  | BiImpl (a,b) -> "(" ^ string_of_proposition a ^ ") <=> (" ^ string_of_proposition b ^ ")"
+
 type interpretation = (varnom * verite) list
 
 let rec interpretation_cherche (nom : varnom) (i : interpretation) : verite option = match i with
@@ -94,6 +103,13 @@ type proposition_simple =
   | Et of proposition_simple Pasvide.pas_vide
   | Pas of proposition_simple
 
+let rec string_of_simple = function
+  | Atome (Lit b) -> string_of_bool b
+  | Atome (Var nom) -> nom
+  | Ou es -> "(" ^ Pasvide.intercalez_avec ")+(" (Pasvide.map string_of_simple es) ^ ")"
+  | Et es -> "(" ^ Pasvide.intercalez_avec ").(" (Pasvide.map string_of_simple es) ^ ")"
+  | Pas e -> "¬(" ^ string_of_simple e ^ ")"
+
 let rec prop_au_simple (p : proposition) : proposition_simple = match p with
   | Atome a -> Atome a
   | Ou xs -> Ou (Pasvide.map prop_au_simple xs)
@@ -126,6 +142,11 @@ type neg_atome =
   | AtomeVar of varnom
   | PasAtomeVar of varnom
 
+let string_of_neg_atome = function
+  | AtomeLit b -> string_of_bool b
+  | AtomeVar nom -> nom
+  | PasAtomeVar nom -> "¬" ^ nom
+
 let neg_atome_print = function
   | AtomeLit b -> "AtomeLit " ^ string_of_bool b
   | AtomeVar nom -> "AtomeVar " ^ nom
@@ -157,6 +178,11 @@ let nnf_gen : proposition_nnf QCheck.Gen.t = QCheck.Gen.(sized @@ fix
 
 let nnf_arbitraire : proposition_nnf QCheck.arbitrary =
   QCheck.make nnf_gen
+
+let rec string_of_nnf = function
+  | Atome neg_atome -> string_of_neg_atome neg_atome
+  | Ou es -> "(" ^ Pasvide.intercalez_avec ")+(" (Pasvide.map string_of_nnf es) ^ ")"
+  | Et es -> "(" ^ Pasvide.intercalez_avec ").(" (Pasvide.map string_of_nnf es) ^ ")"
 
 let rec simple_au_nnf (p : proposition_simple) : proposition_nnf = match p with
   | Atome (Lit b) -> Atome (AtomeLit b)
@@ -200,6 +226,10 @@ type proposition_dnf = terme_dnf Pasvide.pas_vide
 let terme_dnf_arbitraire = Pasvide.pas_vide_arbitraire neg_atome_arbitraire
 
 let dnf_arbitraire = Pasvide.pas_vide_arbitraire terme_dnf_arbitraire
+
+let string_of_terme_dnf atomes = "(" ^ (Pasvide.intercalez_avec ").(" (Pasvide.map string_of_neg_atome atomes)) ^ ")"
+
+let string_of_dnf es = "(" ^ (Pasvide.intercalez_avec ")+(" (Pasvide.map string_of_terme_dnf es)) ^ ")"
 
 let fussionnez_deux_dnf (x : proposition_dnf) (y : proposition_dnf) : proposition_dnf =
   let zs = Pasvide.prod_cartesian x y in
