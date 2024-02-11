@@ -7,3 +7,8 @@ let prennez_rev n xs =
   aux [] n xs
 
 let prennez n xs = List.rev (prennez_rev n xs)
+
+let rec intercalez_str sep = function
+  | [] -> ""
+  | h::[] -> h
+  | h::(_::_ as ts) -> h ^ sep ^ intercalez_str sep ts

@@ -18,9 +18,9 @@ let rec enchainez (xs : 'a pas_vide) (ys : 'a pas_vide) : 'a pas_vide = match xs
 
 let (@:) = enchainez
 
-let rec intercalez_avec sep = function
+let rec intercalez sep = function
   | Feui x -> x
-  | Cons (h,ts) -> h ^ sep ^ intercalez_avec sep ts
+  | Cons (h,ts) -> h ^ sep ^ intercalez sep ts
 
 let tete (xs : 'a pas_vide) : 'a = match xs with
   | Feui x -> x

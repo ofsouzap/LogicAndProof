@@ -47,8 +47,8 @@ let proposition_arbitraire : proposition QCheck.arbitrary =
 let rec string_of_proposition = function
   | Atome (Lit b) -> string_of_bool b
   | Atome (Var nom) -> nom
-  | Ou es -> "(" ^ Pasvide.intercalez_avec ")+(" (Pasvide.map string_of_proposition es) ^ ")"
-  | Et es -> "(" ^ Pasvide.intercalez_avec ").(" (Pasvide.map string_of_proposition es) ^ ")"
+  | Ou es -> "(" ^ Pasvide.intercalez ")+(" (Pasvide.map string_of_proposition es) ^ ")"
+  | Et es -> "(" ^ Pasvide.intercalez ").(" (Pasvide.map string_of_proposition es) ^ ")"
   | Pas e -> "¬(" ^ string_of_proposition e ^ ")"
   | Impl (a,b) -> "(" ^ string_of_proposition a ^ ") => (" ^ string_of_proposition b ^ ")"
   | BiImpl (a,b) -> "(" ^ string_of_proposition a ^ ") <=> (" ^ string_of_proposition b ^ ")"
@@ -106,8 +106,8 @@ type proposition_simple =
 let rec string_of_simple = function
   | Atome (Lit b) -> string_of_bool b
   | Atome (Var nom) -> nom
-  | Ou es -> "(" ^ Pasvide.intercalez_avec ")+(" (Pasvide.map string_of_simple es) ^ ")"
-  | Et es -> "(" ^ Pasvide.intercalez_avec ").(" (Pasvide.map string_of_simple es) ^ ")"
+  | Ou es -> "(" ^ Pasvide.intercalez ")+(" (Pasvide.map string_of_simple es) ^ ")"
+  | Et es -> "(" ^ Pasvide.intercalez ").(" (Pasvide.map string_of_simple es) ^ ")"
   | Pas e -> "¬(" ^ string_of_simple e ^ ")"
 
 let rec prop_au_simple (p : proposition) : proposition_simple = match p with
@@ -181,8 +181,8 @@ let nnf_arbitraire : proposition_nnf QCheck.arbitrary =
 
 let rec string_of_nnf = function
   | Atome neg_atome -> string_of_neg_atome neg_atome
-  | Ou es -> "(" ^ Pasvide.intercalez_avec ")+(" (Pasvide.map string_of_nnf es) ^ ")"
-  | Et es -> "(" ^ Pasvide.intercalez_avec ").(" (Pasvide.map string_of_nnf es) ^ ")"
+  | Ou es -> "(" ^ Pasvide.intercalez ")+(" (Pasvide.map string_of_nnf es) ^ ")"
+  | Et es -> "(" ^ Pasvide.intercalez ").(" (Pasvide.map string_of_nnf es) ^ ")"
 
 let rec simple_au_nnf (p : proposition_simple) : proposition_nnf = match p with
   | Atome (Lit b) -> Atome (AtomeLit b)
@@ -231,17 +231,17 @@ let terme_dnf_arbitraire = Pasvide.pas_vide_arbitraire neg_atome_arbitraire
 
 let dnf_arbitraire = Pasvide.pas_vide_arbitraire terme_dnf_arbitraire
 
-let string_of_terme_dnf atomes = "(" ^ (Pasvide.intercalez_avec ").(" (Pasvide.map string_of_neg_atome atomes)) ^ ")"
+let string_of_terme_dnf atomes = "(" ^ (Pasvide.intercalez ").(" (Pasvide.map string_of_neg_atome atomes)) ^ ")"
 
-let string_of_dnf es = "(" ^ (Pasvide.intercalez_avec ")+(" (Pasvide.map string_of_terme_dnf es)) ^ ")"
+let string_of_dnf es = "(" ^ (Pasvide.intercalez ")+(" (Pasvide.map string_of_terme_dnf es)) ^ ")"
 
 let terme_cnf_arbitraire = Pasvide.pas_vide_arbitraire neg_atome_arbitraire
 
 let cnf_arbitraire = Pasvide.pas_vide_arbitraire terme_cnf_arbitraire
 
-let string_of_terme_cnf atomes = "(" ^ (Pasvide.intercalez_avec ")+(" (Pasvide.map string_of_neg_atome atomes)) ^ ")"
+let string_of_terme_cnf atomes = "(" ^ (Pasvide.intercalez ")+(" (Pasvide.map string_of_neg_atome atomes)) ^ ")"
 
-let string_of_cnf es = "(" ^ (Pasvide.intercalez_avec ").(" (Pasvide.map string_of_terme_cnf es)) ^ ")"
+let string_of_cnf es = "(" ^ (Pasvide.intercalez ").(" (Pasvide.map string_of_terme_cnf es)) ^ ")"
 
 let fussionnez_cartesian_deux (x : 'a Pasvide.pas_vide) (y : 'a Pasvide.pas_vide) : 'a Pasvide.pas_vide =
   let zs = Pasvide.prod_cartesian x y in

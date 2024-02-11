@@ -19,7 +19,7 @@ type atome =
 
 (** Les propositions brutes *)
 
-(** Une proposition logique *)
+(** Une proposition logique (alias une formule) *)
 type proposition =
   | Atome of atome
   | Ou of proposition Pasvide.pas_vide
