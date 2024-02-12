@@ -1,9 +1,17 @@
-open LogicAndProof.Sets
+open Nicelib
+open Nicelib.Utils
 open LogicAndProof.Pasvide
 open LogicAndProof.Propositions
 open LogicAndProof.Propositions_abr
 
-let varnom_set : ('a set) Alcotest.testable = Alcotest.testable formateur_string_set pareil
+let formateur_string_set ppf =
+  let rec aux ppf = function
+    | [] -> Fmt.pf ppf ""
+    | h::ts -> Fmt.pf ppf "%s, %a" h aux ts
+  in
+  aux ppf -.- Sets.list_of_set
+
+let varnom_set : ('a Sets.t) Alcotest.testable = Alcotest.testable formateur_string_set Sets.equal
 
 let test_sante () =
   let exp = 5 in
@@ -16,14 +24,14 @@ let suite_sante =
 
 (* Propositions variables libres *)
 
-let testez_prop_var_libres (exp : varnom set) (p : proposition) () =
+let testez_prop_var_libres (exp : varnom Sets.t) (p : proposition) () =
   let res = prop_var_libres p in
   Alcotest.check varnom_set "" exp res
 
 let suite_prop_var_libres =
-  [ "Vide", `Quick, testez_prop_var_libres vide (Impl ((lit_prop vrai), (ou_prop [lit_prop faux; lit_prop vrai])))
-  ; "Un", `Quick, testez_prop_var_libres (set_of_list ["A"]) (Impl ((var_prop "A"), (ou_prop [lit_prop faux; lit_prop vrai])))
-  ; "Deux", `Quick, testez_prop_var_libres (set_of_list ["A";"B"]) (Impl ((var_prop "A"), (ou_prop [var_prop "B"; var_prop "B"])))
+  [ "Sets.empty", `Quick, testez_prop_var_libres Sets.empty (Impl ((lit_prop vrai), (ou_prop [lit_prop faux; lit_prop vrai])))
+  ; "Un", `Quick, testez_prop_var_libres (Sets.set_of_list ["A"]) (Impl ((var_prop "A"), (ou_prop [lit_prop faux; lit_prop vrai])))
+  ; "Deux", `Quick, testez_prop_var_libres (Sets.set_of_list ["A";"B"]) (Impl ((var_prop "A"), (ou_prop [var_prop "B"; var_prop "B"])))
   ]
 
 (* Evaluation *)
@@ -71,7 +79,7 @@ let suite_evaluation =
 (* Comparez propositions *)
 
 let testez_propositions_equivalents (exp : bool) (p1 : proposition) (p2 : proposition) () =
-  let vars = union (prop_var_libres p1) (prop_var_libres p2) in
+  let vars = Sets.union (prop_var_libres p1) (prop_var_libres p2) in
   let res = propositions_equivalents vars evaluez evaluez p1 p2 in
   Alcotest.(check bool) "" exp res
 
@@ -97,14 +105,14 @@ let suite_prop_au_nnf = List.map QCheck_alcotest.to_alcotest
 
 (* NNF variables libres *)
 
-let testez_nnf_var_libres (exp : varnom set) (p : proposition_nnf) () =
+let testez_nnf_var_libres (exp : varnom Sets.t) (p : proposition_nnf) () =
   let res = nnf_var_libres p in
   Alcotest.check varnom_set "" exp res
 
 let suite_nnf_var_libres =
-  [ "Vide", `Quick, testez_nnf_var_libres vide (ou_nnf [lit_nnf vrai; ou_nnf [lit_nnf faux; lit_nnf vrai]])
-  ; "Un", `Quick, testez_nnf_var_libres (set_of_list ["A"]) (ou_nnf [lit_nnf vrai; ou_nnf [pas_var_nnf "A"; lit_nnf vrai]])
-  ; "Deux", `Quick, testez_nnf_var_libres (set_of_list ["A";"B"]) (ou_nnf [var_nnf "A"; ou_nnf [pas_var_nnf "B"; var_nnf "B"]])
+  [ "Sets.empty", `Quick, testez_nnf_var_libres Sets.empty (ou_nnf [lit_nnf vrai; ou_nnf [lit_nnf faux; lit_nnf vrai]])
+  ; "Un", `Quick, testez_nnf_var_libres (Sets.set_of_list ["A"]) (ou_nnf [lit_nnf vrai; ou_nnf [pas_var_nnf "A"; lit_nnf vrai]])
+  ; "Deux", `Quick, testez_nnf_var_libres (Sets.set_of_list ["A";"B"]) (ou_nnf [var_nnf "A"; ou_nnf [pas_var_nnf "B"; var_nnf "B"]])
   ]
 
 (* Evaluez NNF *)
@@ -163,14 +171,14 @@ let suite_nnf_au_dnf = List.map QCheck_alcotest.to_alcotest
 
 (* DNF variables libres *)
 
-let testez_dnf_var_libres (exp : varnom set) (p : proposition_dnf) () =
+let testez_dnf_var_libres (exp : varnom Sets.t) (p : proposition_dnf) () =
   let res = dnf_var_libres p in
   Alcotest.check varnom_set "" exp res
 
 let suite_dnf_var_libres =
-  [ "Vide", `Quick, testez_dnf_var_libres vide (dnf [[lit_neg_atome vrai]; [lit_neg_atome faux; lit_neg_atome vrai]])
-  ; "Un", `Quick, testez_dnf_var_libres (set_of_list ["A"]) (dnf [[var_neg_atome "A"]; [lit_neg_atome faux; lit_neg_atome vrai]])
-  ; "Deux", `Quick, testez_dnf_var_libres (set_of_list ["A";"B"]) (dnf [[lit_neg_atome vrai]; [pas_var_neg_atome "A"; pas_var_neg_atome "B"]])
+  [ "Sets.empty", `Quick, testez_dnf_var_libres Sets.empty (dnf [[lit_neg_atome vrai]; [lit_neg_atome faux; lit_neg_atome vrai]])
+  ; "Un", `Quick, testez_dnf_var_libres (Sets.set_of_list ["A"]) (dnf [[var_neg_atome "A"]; [lit_neg_atome faux; lit_neg_atome vrai]])
+  ; "Deux", `Quick, testez_dnf_var_libres (Sets.set_of_list ["A";"B"]) (dnf [[lit_neg_atome vrai]; [pas_var_neg_atome "A"; pas_var_neg_atome "B"]])
   ]
 
 (* Evaluez DNF *)
@@ -233,14 +241,14 @@ let suite_nnf_au_cnf = List.map QCheck_alcotest.to_alcotest
 
 (* CNF variables libres *)
 
-let testez_cnf_var_libres (exp : varnom set) (p : proposition_cnf) () =
+let testez_cnf_var_libres (exp : varnom Sets.t) (p : proposition_cnf) () =
   let res = cnf_var_libres p in
   Alcotest.check varnom_set "" exp res
 
 let suite_cnf_var_libres =
-  [ "Vide", `Quick, testez_cnf_var_libres vide (cnf [[lit_neg_atome vrai]; [lit_neg_atome faux; lit_neg_atome vrai]])
-  ; "Un", `Quick, testez_cnf_var_libres (set_of_list ["A"]) (cnf [[var_neg_atome "A"]; [lit_neg_atome faux; lit_neg_atome vrai]])
-  ; "Deux", `Quick, testez_cnf_var_libres (set_of_list ["A";"B"]) (cnf [[lit_neg_atome vrai]; [pas_var_neg_atome "A"; pas_var_neg_atome "B"]])
+  [ "Sets.empty", `Quick, testez_cnf_var_libres Sets.empty (cnf [[lit_neg_atome vrai]; [lit_neg_atome faux; lit_neg_atome vrai]])
+  ; "Un", `Quick, testez_cnf_var_libres (Sets.set_of_list ["A"]) (cnf [[var_neg_atome "A"]; [lit_neg_atome faux; lit_neg_atome vrai]])
+  ; "Deux", `Quick, testez_cnf_var_libres (Sets.set_of_list ["A";"B"]) (cnf [[lit_neg_atome vrai]; [pas_var_neg_atome "A"; pas_var_neg_atome "B"]])
   ]
 
 (* Evaluez CNF *)

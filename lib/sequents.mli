@@ -1,9 +1,9 @@
 (** Le calcul des sequents *)
 
-open Sets
+open Nicelib
 open Propositions
 
 (** Un sequent d'hypotheses et conclusions *)
-type sequent = proposition set * proposition set
+type sequent = proposition Sets.t * proposition Sets.t
 
 val string_of_sequent : sequent -> string

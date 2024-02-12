@@ -1,9 +1,10 @@
-open Sets
+open Utils
+open Nicelib
 open Propositions
 
-type sequent = proposition set * proposition set
+type sequent = proposition Sets.t * proposition Sets.t
 
 let string_of_sequent (hs, cs) =
-    "(" ^ Utils.intercalez_str "),(" (List.map string_of_proposition (list_of_set hs)) ^ ")"
+    "(" ^ intercalez_str "),(" (List.map string_of_proposition (Sets.list_of_set hs)) ^ ")"
   ^ "⊢"
-  ^ "(" ^ Utils.intercalez_str "),(" (List.map string_of_proposition (list_of_set cs)) ^ ")"
+  ^ "(" ^ intercalez_str "),(" (List.map string_of_proposition (Sets.list_of_set cs)) ^ ")"
