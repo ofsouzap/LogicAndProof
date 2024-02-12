@@ -1,3 +1,5 @@
+open Nicelib
+
 type verite = bool
 let vrai : verite = true
 let faux : verite = false
@@ -53,17 +55,17 @@ let rec string_of_proposition = function
   | Impl (a,b) -> "(" ^ string_of_proposition a ^ ") => (" ^ string_of_proposition b ^ ")"
   | BiImpl (a,b) -> "(" ^ string_of_proposition a ^ ") <=> (" ^ string_of_proposition b ^ ")"
 
-let prop_var_libres (p : proposition) : varnom Sets.set =
+let prop_var_libres (p : proposition) : varnom Sets.t =
   let rec aux acc = function
     | Atome (Lit _) -> acc
-    | Atome (Var n) -> Sets.ajoutez n acc
+    | Atome (Var n) -> Sets.add n acc
     | Ou xs -> Pasvide.foldl aux acc xs
     | Et xs -> Pasvide.foldl aux acc xs
     | Pas x -> aux acc x
     | Impl (a, b) -> aux (aux acc a) b
     | BiImpl (a, b) -> aux (aux acc a) b
   in
-  aux Sets.vide p
+  aux Sets.empty p
 
 type interpretation = (varnom * verite) list
 
@@ -204,15 +206,15 @@ let evaluez_neg_atome (i : interpretation) (a : neg_atome) : verite = match a wi
   | AtomeVar nom -> ( match interpretation_cherche nom i with | None -> false | Some b -> b )
   | PasAtomeVar nom -> pas ( match interpretation_cherche nom i with | None -> false | Some b -> b )
 
-let nnf_var_libres (p : proposition_nnf) : varnom Sets.set =
+let nnf_var_libres (p : proposition_nnf) : varnom Sets.t =
   let rec aux acc = function
     | Atome (AtomeLit _) -> acc
-    | Atome (AtomeVar nom) -> Sets.ajoutez nom acc
-    | Atome (PasAtomeVar nom) -> Sets.ajoutez nom acc
+    | Atome (AtomeVar nom) -> Sets.add nom acc
+    | Atome (PasAtomeVar nom) -> Sets.add nom acc
     | Ou xs -> Pasvide.foldl aux acc xs
     | Et xs -> Pasvide.foldl aux acc xs
   in
-  aux Sets.vide p
+  aux Sets.empty p
 
 let rec evaluez_nnf (i : interpretation) (p : proposition_nnf) : verite = match p with
   | Atome a -> evaluez_neg_atome i a
@@ -262,13 +264,13 @@ let rec nnf_au_dnf (p : proposition_nnf) : proposition_dnf = match p with
     let xs' = Pasvide.map nnf_au_dnf xs in
     fusionnez_cartesian_plusieurs xs'
 
-let dnf_var_libres (p : proposition_dnf) : varnom Sets.set =
-  let aux (acc : varnom Sets.set) (a : neg_atome) : varnom Sets.set = match a with
+let dnf_var_libres (p : proposition_dnf) : varnom Sets.t =
+  let aux (acc : varnom Sets.t) (a : neg_atome) : varnom Sets.t = match a with
     | AtomeLit _ -> acc
-    | AtomeVar nom -> Sets.ajoutez nom acc
-    | PasAtomeVar nom -> Sets.ajoutez nom acc
+    | AtomeVar nom -> Sets.add nom acc
+    | PasAtomeVar nom -> Sets.add nom acc
   in
-  Pasvide.foldl (Pasvide.foldl aux) Sets.vide p
+  Pasvide.foldl (Pasvide.foldl aux) Sets.empty p
 
 let evaluez_terme_dnf (i : interpretation) = Pasvide.tous (evaluez_neg_atome i)
 
@@ -283,13 +285,13 @@ let rec nnf_au_cnf (p : proposition_nnf) : proposition_cnf = match p with
     let xs' = Pasvide.map nnf_au_cnf xs in
     Pasvide.aplatissez xs'
 
-let cnf_var_libres (p : proposition_cnf) : varnom Sets.set =
-  let aux (acc : varnom Sets.set) (a : neg_atome) : varnom Sets.set = match a with
+let cnf_var_libres (p : proposition_cnf) : varnom Sets.t =
+  let aux (acc : varnom Sets.t) (a : neg_atome) : varnom Sets.t = match a with
     | AtomeLit _ -> acc
-    | AtomeVar nom -> Sets.ajoutez nom acc
-    | PasAtomeVar nom -> Sets.ajoutez nom acc
+    | AtomeVar nom -> Sets.add nom acc
+    | PasAtomeVar nom -> Sets.add nom acc
   in
-  Pasvide.foldl (Pasvide.foldl aux) Sets.vide p
+  Pasvide.foldl (Pasvide.foldl aux) Sets.empty p
 
 let evaluez_terme_cnf (i : interpretation) = Pasvide.quelque (evaluez_neg_atome i)
 

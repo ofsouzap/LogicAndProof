@@ -1,5 +1,7 @@
 (** Les trucs pour la logique propositionnel *)
 
+open Nicelib
+
 (** Une valeur booleene *)
 type verite = bool
 
@@ -33,7 +35,7 @@ val proposition_arbitraire : proposition QCheck.arbitrary
 val string_of_proposition : proposition -> string
 
 (** Trouve les noms des variables libres dans une proposition *)
-val prop_var_libres : proposition -> varnom Sets.set
+val prop_var_libres : proposition -> varnom Sets.t
 
 (** Interpretations *)
 
@@ -48,7 +50,7 @@ val interpretation_ajoute :
   varnom -> verite -> interpretation -> interpretation
 
 (** Comparez des propositions utilisant leurs fonctions d'evaluation pour voir si ils sont equivalents *)
-val propositions_equivalents : varnom Sets.set -> (interpretation -> 'a -> bool) -> (interpretation -> 'b -> bool) -> 'a -> 'b -> bool
+val propositions_equivalents : varnom Sets.t -> (interpretation -> 'a -> bool) -> (interpretation -> 'b -> bool) -> 'a -> 'b -> bool
 
 (** Les propositions simples *)
 
@@ -89,7 +91,7 @@ val string_of_nnf : proposition_nnf -> string
 val simple_au_nnf : proposition_simple -> proposition_nnf
 
 (** Trouve les noms des variables libres dans une proposition en forme NNF *)
-val nnf_var_libres : proposition_nnf -> varnom Sets.set
+val nnf_var_libres : proposition_nnf -> varnom Sets.t
 
 (** Evaluez une proposition en forme NNF *)
 val evaluez_nnf : interpretation -> proposition_nnf -> verite
@@ -120,7 +122,7 @@ val string_of_cnf : proposition_cnf -> string
 val nnf_au_dnf : proposition_nnf -> proposition_dnf
 
 (** Trouve les noms des variables libres dans une proposition en forme DNF *)
-val dnf_var_libres : proposition_dnf -> varnom Sets.set
+val dnf_var_libres : proposition_dnf -> varnom Sets.t
 
 (** Evaluez une proposition en forme DNF *)
 val evaluez_dnf : interpretation -> proposition_dnf -> verite
@@ -129,7 +131,7 @@ val evaluez_dnf : interpretation -> proposition_dnf -> verite
 val nnf_au_cnf : proposition_nnf -> proposition_cnf
 
 (** Trouve les noms des variables libres dans une proposition en forme CNF *)
-val cnf_var_libres : proposition_cnf -> varnom Sets.set
+val cnf_var_libres : proposition_cnf -> varnom Sets.t
 
 (** Evaluez une proposition en forme CNF *)
 val evaluez_cnf : interpretation -> proposition_cnf -> verite
