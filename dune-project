@@ -14,4 +14,4 @@
 (package
  (name LogicAndProof)
  (synopsis "Logic stuff")
- (depends ocaml dune alcotest fmt qcheck qcheck-alcotest))
+ (depends ocaml dune alcotest nicelib fmt qcheck qcheck-alcotest))
