@@ -12,6 +12,12 @@ val make : proposition Sets.t * proposition Sets.t -> sequent
 (** Creez un sequent avec les hypotheses et conclusions en listes *)
 val make_listes : proposition list * proposition list -> sequent
 
+(** Prennez les hypotheses d'un sequent *)
+val hypotheses : sequent -> proposition Sets.t
+
+(** Prennez les conclusions d'un sequent *)
+val conclusions : sequent -> proposition Sets.t
+
 val string_of_sequent : sequent -> string
 
 (** Regardez si un sequent est un sequent axiome *)

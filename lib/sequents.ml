@@ -19,6 +19,14 @@ let make (hypos, concs) =
 let make_listes (hypos, concs) =
   make (Sets.set_of_list hypos, Sets.set_of_list concs)
 
+let hypotheses ((sh,_) : sequent) =
+  let open Nicelib.Functor in
+  deemballez_hypo <$>~~ sh
+
+let conclusions ((_,sc) : sequent) =
+  let open Nicelib.Functor in
+  deemballez_conc <$>~~ sc
+
 let string_of_sequent ((hs, cs) : sequent) =
   let open Nicelib.Functor in
     "(" ^ intercalez_str "),(" (List.map string_of_proposition (deemballez_hypo <$>.. Sets.list_of_set hs)) ^ ")"
@@ -88,7 +96,7 @@ let prec_disj_gauche ((sh,sc) : sequent) () : sequent Sets.t Seq.node =
   let rec aux : hypothese list -> sequent Sets.t Seq.node = function
     | [] -> Seq.Nil
     | (Hypo hh)::hts -> ( match hh with
-      | Et es as hh ->
+      | Ou es as hh ->
         let sh' = Sets.remove (Hypo hh) sh in
         Seq.Cons ( (creez_pred sh' <$>~~ ((Sets.set_of_list -.- Pasvide.list_of_pas_vide) es)), fun () -> aux hts)
       | _ -> aux hts )
