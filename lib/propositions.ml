@@ -296,5 +296,3 @@ let cnf_var_libres (p : proposition_cnf) : varnom Sets.t =
 let evaluez_terme_cnf (i : interpretation) = Pasvide.quelque (evaluez_neg_atome i)
 
 let evaluez_cnf (i : interpretation) = Pasvide.tous (evaluez_terme_cnf i)
-
-(** TODO - faisez le truc pour transformer les proposition en CNF *)
