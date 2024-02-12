@@ -83,7 +83,7 @@ val pas_vide_arbitraire_n : int -> 'a QCheck.arbitrary -> 'a pas_vide QCheck.arb
 (** Fmap pour les pas-vides *)
 val ( <$>.|. ) : ('a -> 'b) -> 'a pas_vide -> 'b pas_vide
 
-(* J'ai la flemme faire la truc applicative car je ne peut pas creer le checker *)
+(* J'ai la flemme de faire la truc applicative car je ne peut pas creer le checker *)
 
 (** Return pour les pas-vides *)
 val return_pas_vide : 'a -> 'a pas_vide
