@@ -202,8 +202,11 @@ let suite_prod_cartesian =
 
 let () =
   let open Alcotest in
+  let open Nicelib.Checkers in
   run "Pas-Vide"
   [ "Construction", suite_constructions
   ; "Vue", suite_vue
   ; "Operations Simples", suite_operations_simples
-  ; "Produit Cartesian", suite_prod_cartesian ]
+  ; "Produit Cartesian", suite_prod_cartesian
+  ; "Instance functor", functor_suite ( <$>.|. ) QCheck.(pas_vide_arbitraire int) QCheck.(fun1 Observable.int int)
+  ; "Instance monad", monad_suite return_pas_vide ( >>=.|. ) QCheck.(pas_vide_arbitraire_n 20 int) QCheck.(fun1 Observable.int (pas_vide_arbitraire_n 20 int)) QCheck.int ]

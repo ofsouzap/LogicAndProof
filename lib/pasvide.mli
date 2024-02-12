@@ -77,3 +77,16 @@ val prod_cartesian : 'a pas_vide -> 'b pas_vide -> ('a * 'b) pas_vide
 val pas_vide_arbitraire : 'a QCheck.arbitrary -> 'a pas_vide QCheck.arbitrary
 
 val pas_vide_arbitraire_n : int -> 'a QCheck.arbitrary -> 'a pas_vide QCheck.arbitrary
+
+(** Instances typeclass pour nicelib *)
+
+(** Fmap pour les pas-vides *)
+val ( <$>.|. ) : ('a -> 'b) -> 'a pas_vide -> 'b pas_vide
+
+(* J'ai la flemme faire la truc applicative car je ne peut pas creer le checker *)
+
+(** Return pour les pas-vides *)
+val return_pas_vide : 'a -> 'a pas_vide
+
+(** Bind pour les pas-vides *)
+val ( >>=.|. ) : 'a pas_vide -> ('a -> 'b pas_vide) -> 'b pas_vide

@@ -136,3 +136,12 @@ let pas_vide_gen_n n gen_ele = QCheck.Gen.(fix
 let pas_vide_arbitraire_n n arb = QCheck.make
   ~print:(pas_vide_arbitraire_print arb)
   (pas_vide_gen_n n (QCheck.gen arb))
+
+let ( <$>.|. ) = map
+
+let return_pas_vide = singleton
+
+let ( >>=.|. ) xs f =
+  let open Nicelib.Utils in
+  let open Nicelib.Monad in
+  pas_vide_of_list ((list_of_pas_vide xs) >>=.. (list_of_pas_vide -.- f)) (* J'ai la flemme *)
