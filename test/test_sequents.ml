@@ -1,3 +1,5 @@
+(* TODO - testes pour les fonctions 'prec's *)
+
 (* Main *)
 
 let () =
