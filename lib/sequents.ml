@@ -115,3 +115,31 @@ let prec_disj_droit ((sh,sc) : sequent) () : sequent Sets.t Seq.node =
       | _ -> aux cts )
   in
   aux (Sets.list_of_set sc)
+
+let prec_impl_gauche ((sh,sc) : sequent) () : sequent Sets.t Seq.node =
+  let creez_preds (sh' : hypothese Sets.t) (sc' : conclusion Sets.t) (a : proposition) (b : proposition) : sequent Sets.t =
+    let s_a = (sh', Sets.add (Conc a) sc') in
+    let s_b = (Sets.add (Hypo b) sh', sc') in
+    Sets.set_of_list [s_a; s_b]
+  in
+  let rec aux : hypothese list -> sequent Sets.t Seq.node = function
+    | [] -> Seq.Nil
+    | (Hypo hh)::hts -> ( match hh with
+      | Impl (a,b) as hh ->
+        let sh' = Sets.remove (Hypo hh) sh in
+        Seq.Cons (creez_preds sh' sc a b, fun () -> aux hts)
+      | _ -> aux hts )
+  in
+  aux (Sets.list_of_set sh)
+
+let prec_impl_droit ((sh,sc) : sequent) () : sequent Sets.t Seq.node =
+  let rec aux : conclusion list -> sequent Sets.t Seq.node = function
+    | [] -> Seq.Nil
+    | (Conc ch)::cts -> ( match ch with
+      | Impl (a,b) as ch ->
+        let sh' = sh in
+        let sc' = Sets.remove (Conc ch) sc in
+        Seq.Cons ( Sets.singleton (Sets.add (Hypo a) sh', Sets.add (Conc b) sc'), fun () -> aux cts )
+      | _ -> aux cts )
+    in
+    aux (Sets.list_of_set sc)
