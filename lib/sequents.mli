@@ -46,6 +46,3 @@ val prec_impl_gauche : sequent -> sequent Sets.t Seq.t
 
 (** Creez les precedents possibles avec la regle sequente implication a droite *)
 val prec_impl_droit : sequent -> sequent Sets.t Seq.t
-
-(** Essayez de prouver un sequent dans un maximum de qq etapes. Si on reussit, on retour un liste des etapes *)
-val prouvez_max : int -> sequent -> sequent list option
